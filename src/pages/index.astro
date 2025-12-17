@@ -1,64 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Seasonal from '../content/seasonal.md';
-
-const spotServices = [
-        { name: 'キッチン', price: '¥19,000' },
-        { name: 'レンジフード', price: '¥18,000' },
-        { name: '浴室', price: '¥18,000' },
-        { name: '浴室＋洗面台', price: '¥22,000' },
-        { name: 'トイレ', price: '¥8,000' },
-        { name: '浴室＋トイレ', price: '¥20,000' },
-        { name: '浴室＋トイレ＋洗面台', price: '¥26,000' },
-        { name: 'エアコンクリーニング（内部高圧洗浄コース）', price: '¥22,000' },
-];
-
-const regularPlans = [
-        {
-                set: 'キッチン＋浴室＋トイレ＋洗面台',
-                monthly: '¥20,000',
-                bimonthly: '¥26,000',
-        },
-        {
-                set: '浴室＋トイレ',
-                monthly: '¥18,000',
-                bimonthly: '¥20,000',
-        },
-        {
-                set: 'トイレ＋洗面台',
-                monthly: '¥16,000',
-                bimonthly: '¥18,000',
-        },
-        {
-                set: '浴室＋トイレ＋洗面台',
-                monthly: '¥26,000',
-                bimonthly: '¥28,000',
-        },
-];
-
-const options = [
-        { name: '防カビコート（浴室）', price: '¥3,000' },
-        { name: '鏡のウロコ取り（浴室）', price: '¥6,000' },
-        { name: '浴室エプロン内部高圧洗浄', price: '¥4,000' },
-        { name: 'お掃除機能付きエアコン追加', price: '¥8,000' },
-        { name: '室外機（1台につき）', price: '¥4,000' },
-];
-
-const bundleDiscounts = [
-        'キッチン＋浴室＋トイレ＋洗面台：¥36,000',
-        '浴室＋トイレ＋洗面台：¥26,000',
-        '浴室＋トイレ：¥20,000',
-        '浴室＋トイレ＋洗面台＋エアコン＋室外機：¥67,000',
-];
-
-const notes = [
-        '価格は税込価格です。',
-        '作業時間は汚れ・広さにより前後する場合があります。',
-        '立合時間超過の場合は、30分毎に延長料金をいただく場合があります。',
-        '駐車場代が有料の場合、お客様にてご負担をお願いします。',
-        '同居のペットは別室への移動や外出をお願いする場合があります。',
-        '上記以外にもメニューにない内容についても対応可能ですので、ご相談ください。',
-];
+import { spotServices } from '../content/spotServices';
+import { regularPlans } from '../content/regularPlans';
+import { options } from '../content/options';
+import { bundleDiscounts } from '../content/bundleDiscounts';
+import { notes } from '../content/notes';
 
 const company = {
         name: 'ダミー株式会社',
