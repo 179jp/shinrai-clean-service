@@ -15,8 +15,12 @@ const company = {
   instagram: 'https://www.instagram.com/shinrai_clean_service',
 };
 
-const standardSections = serviceSections.filter((section) => section.group !== 'special');
-const specialSections = serviceSections.filter((section) => section.group === 'special');
+const standardSections = serviceSections.filter(
+  (section) => section.group !== 'special'
+);
+const specialSections = serviceSections.filter(
+  (section) => section.group === 'special'
+);
 ---
 
 <Layout>
@@ -39,10 +43,21 @@ const specialSections = serviceSections.filter((section) => section.group === 's
           汚れの刺客
         </h2>
       </div>
-      <p class="hero__lead -vt">
-        住まいの空気を変える。<br />
-        見えないところまで、汚れの特性に合わせたプロのクリーニング。
-      </p>
+      <div class="hero__lead -vt">
+        <p>
+          見えるところはもちろん、<br />
+          見えないところ<br />
+          根本からきれいにする。
+        </p>
+        <p>
+          汚れの特性に合わせた<br />
+          溶剤・洗剤・掃除用具。
+        </p>
+        <p>
+          住まいの空気を変える、<br />
+          プロのクリーニング。
+        </p>
+      </div>
     </header>
 
     <section class="section" id="services">
@@ -52,23 +67,21 @@ const specialSections = serviceSections.filter((section) => section.group === 's
       </div>
 
       <div class="service-tabs" id="serviceTabs">
-        {standardSections.map((section) => (
-          <button class="service-tab" type="button" data-target={section.id}>
-            {section.label}
-          </button>
-        ))}
+        {
+          standardSections.map((section) => (
+            <button class="service-tab" type="button" data-target={section.id}>
+              {section.label}
+            </button>
+          ))
+        }
       </div>
 
       <div class="service-slider" id="serviceSlider">
-        {standardSections.map((section) => (
-          <ServiceCard section={section} />
-        ))}
+        {standardSections.map((section) => <ServiceCard section={section} />)}
       </div>
 
       <div class="service-special">
-        {specialSections.map((section) => (
-          <ServiceCard section={section} />
-        ))}
+        {specialSections.map((section) => <ServiceCard section={section} />)}
       </div>
 
       <div class="notes">
@@ -114,11 +127,16 @@ const specialSections = serviceSections.filter((section) => section.group === 's
         <div class="company__row company__row--icon">
           <dt>公式SNS</dt>
           <dd>
-            <a class="company__link" href={company.instagram} target="_blank" rel="noreferrer">
+            <a
+              class="company__link"
+              href={company.instagram}
+              target="_blank"
+              rel="noreferrer"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24" class="icon">
                 <path
                   d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm11.25 1.5a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z"
-                />
+                ></path>
               </svg>
               Instagram
             </a>
@@ -145,7 +163,11 @@ const specialSections = serviceSections.filter((section) => section.group === 's
 
   const scrollToCard = (targetId) => {
     const target = cards.find((card) => card.id === targetId);
-    target?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    target?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
   };
 
   tabs.forEach((tab) => {
