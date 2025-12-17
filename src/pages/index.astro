@@ -11,7 +11,6 @@ const spotServices = [
         { name: '浴室＋トイレ', price: '¥20,000' },
         { name: '浴室＋トイレ＋洗面台', price: '¥26,000' },
         { name: 'エアコンクリーニング（内部高圧洗浄コース）', price: '¥22,000' },
-        { name: '室外機オプション', price: '¥4,000' },
 ];
 
 const regularPlans = [
@@ -38,12 +37,11 @@ const regularPlans = [
 ];
 
 const options = [
-        { name: '鏡のウロコ取り', price: '¥7,000' },
-        { name: '防カビコーティング', price: '¥8,000' },
-        { name: '浴室床オフクリーニング', price: '¥4,000' },
-        { name: '浴室エプロン内高圧洗浄', price: '¥4,000' },
-        { name: '浴室オキシ漬け', price: '¥2,000' },
-        { name: 'キッチンシンク研磨', price: '¥2,000' },
+        { name: '防カビコート（浴室）', price: '¥3,000' },
+        { name: '鏡のウロコ取り（浴室）', price: '¥6,000' },
+        { name: '浴室エプロン内部高圧洗浄', price: '¥4,000' },
+        { name: 'お掃除機能付きエアコン追加', price: '¥8,000' },
+        { name: '室外機（1台につき）', price: '¥4,000' },
 ];
 
 const bundleDiscounts = [
@@ -81,20 +79,10 @@ const company = {
                                         汚れの刺客
                                 </h1>
                                 <p class="lede">
-                                        白を基調とした清潔感あるクリーニングで、暮らしの空気を整えます。シンプルで見やすい料金表と、
-                                        季節のおすすめメニューをご案内します。
+                                        住まいの空気を変える、潔いクリーニング。白を基調にした凛とした仕上がりで、
+                                        毎日の暮らしに軽やかさを。
                                 </p>
                         </div>
-                        <dl class="hero__meta">
-                                <div class="stat">
-                                        <dt>対応エリア</dt>
-                                        <dd>首都圏・近郊</dd>
-                                </div>
-                                <div class="stat">
-                                        <dt>営業時間</dt>
-                                        <dd>9:00 - 18:00</dd>
-                                </div>
-                        </dl>
                 </header>
 
                 <section class="section" id="services">
@@ -219,57 +207,30 @@ const company = {
         }
 
         .hero {
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                gap: 24px;
-                align-items: end;
-                padding: 48px 24px 40px;
+                min-height: calc(100vh - 160px);
+                display: flex;
+                align-items: center;
+                padding: 96px 24px 72px;
                 border-bottom: 1px solid #0f172a;
         }
 
+        .hero__copy {
+                max-width: 760px;
+        }
+
         .hero__copy h1 {
-                font-size: clamp(32px, 4vw, 48px);
-                letter-spacing: 0.03em;
-                margin: 8px 0 12px;
-                line-height: 1.3;
+                font-size: clamp(40px, 6vw, 64px);
+                letter-spacing: 0.06em;
+                margin: 14px 0 18px;
+                line-height: 1.2;
         }
 
         .hero__copy .lede {
                 margin: 0;
                 color: #334155;
-        }
-
-        .hero__meta {
-                display: grid;
-                gap: 10px;
-                align-self: center;
-                margin: 0;
-                padding: 0;
-        }
-
-        .stat {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 4px;
-                padding: 8px 0;
-                border-bottom: 1px solid #e2e8f0;
-        }
-
-        .stat:last-child {
-                border-bottom: none;
-        }
-
-        .stat dt {
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                font-size: 11px;
-                color: #94a3b8;
-                margin: 0;
-        }
-
-        .stat dd {
-                margin: 0;
-                font-weight: 600;
+                max-width: 640px;
+                font-size: clamp(17px, 2vw, 20px);
+                line-height: 1.7;
         }
 
         .section {
@@ -458,8 +419,8 @@ const company = {
 
         @media (max-width: 960px) {
                 .hero {
-                        grid-template-columns: 1fr;
-                        padding: 32px;
+                        min-height: 70vh;
+                        padding: 72px 32px 56px;
                 }
 
                 .company__row {
@@ -478,7 +439,8 @@ const company = {
                 }
 
                 .hero {
-                        padding: 24px;
+                        min-height: 70vh;
+                        padding: 48px 18px 40px;
                 }
 
                 .grid--three {
