@@ -1,0 +1,23 @@
+@import './variables.css';
+
+:root {
+        color: var(--color-text);
+        background: var(--color-surface);
+        font-family: var(--font-base);
+        line-height: var(--line-height-base);
+}
+
+* {
+        box-sizing: border-box;
+}
+
+body {
+        margin: 0;
+        background: var(--color-surface);
+        color: var(--color-text);
+        -webkit-font-smoothing: antialiased;
+}
+
+a {
+        color: inherit;
+}

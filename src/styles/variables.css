@@ -1,0 +1,13 @@
+:root {
+        --color-surface: #ffffff;
+        --color-text: #0f172a;
+        --color-lede: #334155;
+        --color-muted: #475569;
+        --color-subtle: #94a3b8;
+        --color-small: #64748b;
+        --border-strong: #0f172a;
+        --border-soft: #e5e7eb;
+        --border-muted: #cbd5e1;
+        --font-base: 'Noto Sans JP', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --line-height-base: 1.7;
+}
