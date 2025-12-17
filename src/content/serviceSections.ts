@@ -15,12 +15,16 @@ export type ServiceSection =
       label: string;
       type: 'list';
       items: ServiceListItem[];
+      group?: 'standard' | 'special';
+      wide?: boolean;
     }
   | {
       id: string;
       label: string;
       type: 'bullets';
       bullets: string[];
+      group?: 'standard' | 'special';
+      wide?: boolean;
     }
   | {
       id: string;
@@ -29,6 +33,8 @@ export type ServiceSection =
       monthlyHeading: string;
       bimonthlyHeading: string;
       rows: RegularPlan[];
+      group?: 'standard' | 'special';
+      wide?: boolean;
     };
 
 export const serviceSections: ServiceSection[] = [
@@ -70,6 +76,8 @@ export const serviceSections: ServiceSection[] = [
     id: 'bundles',
     label: 'セット割',
     type: 'bullets',
+    group: 'special',
+    wide: true,
     bullets: [
       'キッチン＋浴室＋トイレ＋洗面台：¥36,000',
       '浴室＋トイレ＋洗面台：¥26,000',
@@ -83,6 +91,8 @@ export const serviceSections: ServiceSection[] = [
     type: 'table',
     monthlyHeading: '1カ月定期サービス',
     bimonthlyHeading: '2カ月定期サービス',
+    group: 'special',
+    wide: true,
     rows: [
       {
         set: 'キッチン＋浴室＋トイレ＋洗面台',

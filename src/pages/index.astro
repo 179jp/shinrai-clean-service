@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SeasonalContent from '../components/SeasonalContent.astro';
+import ServiceCard from '../components/ServiceCard.astro';
 import { serviceSections } from '../content/serviceSections';
 import { notes } from '../content/notes';
 import '../styles/index.css';
@@ -13,6 +14,9 @@ const company = {
   email: 'info@example.com',
   instagram: 'https://www.instagram.com/shinrai_clean_service',
 };
+
+const standardSections = serviceSections.filter((section) => section.group !== 'special');
+const specialSections = serviceSections.filter((section) => section.group === 'special');
 ---
 
 <Layout>
@@ -48,7 +52,7 @@ const company = {
       </div>
 
       <div class="service-tabs" id="serviceTabs">
-        {serviceSections.map((section) => (
+        {standardSections.map((section) => (
           <button class="service-tab" type="button" data-target={section.id}>
             {section.label}
           </button>
@@ -56,49 +60,14 @@ const company = {
       </div>
 
       <div class="service-slider" id="serviceSlider">
-        {serviceSections.map((section) => (
-          <article class="panel service-card" id={section.id}>
-            <p class="panel__title">{section.label}</p>
+        {standardSections.map((section) => (
+          <ServiceCard section={section} />
+        ))}
+      </div>
 
-            {section.type === 'list' && (
-              <dl class="list">
-                {section.items.map((item) => (
-                  <div class="list__row" role="listitem">
-                    <dt>{item.name}</dt>
-                    <dd>{item.price}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-
-            {section.type === 'bullets' && (
-              <>
-                <ul class="bullets">
-                  {section.bullets.map((text) => (
-                    <li>{text}</li>
-                  ))}
-                </ul>
-                <p class="small">※ 一週間以内再クリーニング無料（条件あり）</p>
-              </>
-            )}
-
-            {section.type === 'table' && (
-              <div class="table">
-                <div class="table__head">
-                  <span>セット内容</span>
-                  <span>{section.monthlyHeading}</span>
-                  <span>{section.bimonthlyHeading}</span>
-                </div>
-                {section.rows.map((plan) => (
-                  <div class="table__row">
-                    <span>{plan.set}</span>
-                    <span>{plan.monthly}</span>
-                    <span>{plan.bimonthly}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </article>
+      <div class="service-special">
+        {specialSections.map((section) => (
+          <ServiceCard section={section} />
         ))}
       </div>
 
