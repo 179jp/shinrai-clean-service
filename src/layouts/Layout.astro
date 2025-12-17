@@ -1,4 +1,6 @@
 ---
+import '../styles/global.css';
+
 const siteTitle = 'SHINRAIクリーンサービス | 公式サイト';
 const siteDescription = '白基調のシンプルなデザインでまとめたSHINRAIクリーンサービスのトップページ。';
 ---
@@ -29,27 +31,3 @@ const siteDescription = '白基調のシンプルなデザインでまとめたS
                 <slot />
         </body>
 </html>
-
-<style>
-        :root {
-                color: #0f172a;
-                background: #ffffff;
-                font-family: 'Noto Sans JP', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                line-height: 1.7;
-        }
-
-        * {
-                box-sizing: border-box;
-        }
-
-        body {
-                margin: 0;
-                background: #ffffff;
-                color: #0f172a;
-                -webkit-font-smoothing: antialiased;
-        }
-
-        a {
-                color: inherit;
-        }
-</style>
