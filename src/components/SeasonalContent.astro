@@ -1,5 +1,5 @@
 ---
-import MonthBadge from './MonthBadge.astro';
+import MonthTitle from './MonthTitle.astro';
 import seasonalSource from '../content/seasonal.mdx?raw';
 
 const sections = seasonalSource
@@ -15,18 +15,21 @@ const sections = seasonalSource
     return { title, items };
   });
 ---
+
 <div class="seasonal-block">
-  <MonthBadge months="12 & 1" season="Winter" />
+  <MonthTitle months="12" season="Winter" />
   <div class="seasonal-grid">
-    {sections.map((section) => (
-      <article class="panel panel--muted markdown">
-        <h3>{section.title}</h3>
-        <ul>
-          {section.items.map((item) => (
-            <li>{item}</li>
-          ))}
-        </ul>
-      </article>
-    ))}
+    {
+      sections.map((section) => (
+        <article class="panel panel--muted markdown">
+          <h3>{section.title}</h3>
+          <ul>
+            {section.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </article>
+      ))
+    }
   </div>
 </div>

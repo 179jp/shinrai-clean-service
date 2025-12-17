@@ -1,4 +1,5 @@
 :root {
+  --bkg-white0: #F6F5F5;
   --bkg-white1: #fafafa;
   --bkg-white2: #f8f8f3;
   --bkg-white3: #f2f4f1;
@@ -23,7 +24,7 @@ body {
 
 .page {
   margin: 0 auto;
-  padding: 0 0 104px;
+  padding: 0;
 }
 
 /* HERO */
@@ -131,7 +132,7 @@ body {
 }
 
 .service-card .panel__title {
-  margin-bottom: 2px;
+  margin-bottom: 2em;
 }
 
 @media (max-width: 768px) {
@@ -163,8 +164,10 @@ body {
   }
 }
 
+/* SEASONAL */
 #seasonal {
   background: var(--bkg-white3);
+  position: relative;
 }
 
 .seasonal-block {
@@ -175,6 +178,28 @@ body {
 .seasonal-grid {
   display: grid;
   gap: 12px;
+}
+
+.month-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25em;
+  position: absolute;
+  bottom: 2em;
+  right: 2em;
+}
+
+.month-title__months {
+  font-size: 100px;
+  line-height: 1;
+}
+
+.month-title__season {
+  color: var(--color-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
 }
 
 #company {
@@ -218,13 +243,15 @@ h2 {
 
 .panel {
   background: var(--bkg-white1);
+  border: 1px solid var(--bkg-white3);
   border-radius: 12px;
   padding: 1em;
 }
 
 .panel__title {
   font-weight: 700;
-  margin-bottom: 10px;
+  margin: 0 0 2em;
+  padding: 0;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 13px;
@@ -251,12 +278,12 @@ h2 {
   border-bottom: none;
 }
 
-dt {
+.panel__row dt {
   margin: 0;
-  font-weight: 500;
+  font-weight: normal;
 }
 
-dd {
+.panel__row dd {
   margin: 0;
   font-weight: 600;
 }
@@ -269,10 +296,21 @@ dd {
 .table__head,
 .table__row {
   display: grid;
-  grid-template-columns: 1.3fr 0.9fr 0.9fr;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border-soft);
+  align-content: center;
+  span {
+    display: inline-block;
+    text-align: right;
+    font-weight: 600;
+    align-self: center;
+  }
+  .name {
+    text-align: left;
+    font-weight: normal;
+  }
 }
 
 .table__head {
@@ -305,18 +343,26 @@ dd {
 }
 
 .notes {
-  margin-top: 18px;
+  margin: 1em 0 0;
+  padding: 0;
+  list-style: none;
   color: var(--color-muted);
+  font-size: 12px;
+  li {
+    &::before {
+      content: '※';
+      font-size: 10px;
+      padding-right: 0.25em;
+    }
+  }
 }
 
-.notes p {
-  margin: 4px 0;
-}
 
-.timestamp {
-  font-size: 13px;
+.service-timestamp {
+  font-size: 12px;
   color: var(--color-subtle);
   margin-top: 12px;
+  text-align: right;
 }
 
 .markdown :global(h3) {
@@ -343,7 +389,7 @@ dd {
 
 .company__row {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 5em 1fr;
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border-soft);
@@ -354,6 +400,7 @@ dd {
 }
 
 .company dt {
+  font-size: 11px;
   color: var(--color-subtle);
   font-weight: 500;
 }
@@ -385,27 +432,6 @@ dd {
   color: var(--color-primary);
 }
 
-.month-badge {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-  background: var(--color-surface);
-  padding: 8px 14px;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--border-soft);
-}
-
-.month-badge__months {
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.month-badge__season {
-  color: var(--color-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 12px;
-}
 
 @media (max-width: 960px) {
   .hero {
@@ -445,5 +471,27 @@ dd {
   .table__head span:nth-child(n + 2),
   .table__row span:nth-child(n + 2) {
     color: var(--color-text);
+  }
+}
+
+
+/* FOOTER */
+.footer-links {
+  display: flex;
+  gap: 3em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.footer-links li a {
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+  transform: skew(-0.4rad) scale(1.05, 1.25);
+  span {
+    font-size: clamp(38px, 5vw, 60px);
   }
 }
