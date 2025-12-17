@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mould Growth Simulation v3.1 (Fixed)</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+      #mouldCanvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="mouldCanvas"></canvas>
+
+    <script>
+      const canvas = document.getElementById("mouldCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // --- 設定値 ---
+      const TILE_SIZE = 80;
+      const GROUT_WIDTH = 2;
+      const TILE_RADIUS = 8;
+
+      const GRID_CELL_SIZE = 1;
+      const MAX_CONCENTRATION = 255;
+      const INITIAL_GROWTH_RATE = 1.0;
+
+      let CANVAS_WIDTH;
+      let CANVAS_HEIGHT;
+      let cols;
+      let rows;
+
+      // 【修正点】変数を宣言時に初期化します
+      let concentration = [];
+      let activeCells = new Set();
+
+      // --- ヘルパー関数 (isGrout, isGroutCorner, roundRect, initializeRandomMould は前バージョンと同じなので省略) ---
+
+      /**
+       * 指定座標が目地領域にあるか判定
+       */
+      function isGrout(x, y) {
+        const tile_x = x % TILE_SIZE;
+        const tile_y = y % TILE_SIZE;
+
+        if (tile_x < GROUT_WIDTH || tile_y < GROUT_WIDTH) return true;
+        if (
+          tile_x >= TILE_SIZE - GROUT_WIDTH ||
+          tile_y >= TILE_SIZE - GROUT_WIDTH
+        )
+          return true;
+        return false;
+      }
+
+      /**
+       * 指定座標が目地の交差部分にあるか判定
+       */
+      function isGroutCorner(x, y) {
+        const tile_x = x % TILE_SIZE;
+        const tile_y = y % TILE_SIZE;
+        const corner_size = GROUT_WIDTH * 2;
+
+        if (tile_x < corner_size && tile_y < corner_size) return true;
+        if (tile_x >= TILE_SIZE - corner_size && tile_y < corner_size)
+          return true;
+        if (tile_x < corner_size && tile_y >= TILE_SIZE - corner_size)
+          return true;
+        if (
+          tile_x >= TILE_SIZE - corner_size &&
+          tile_y >= TILE_SIZE - corner_size
+        )
+          return true;
+
+        return false;
+      }
+
+      /**
+       * 角丸を描画するヘルパー関数
+       */
+      function roundRect(x, y, w, h, radius) {
+        const r = Math.min(radius, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.arcTo(x + w, y, x + w, y + r, r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+        ctx.lineTo(x + r, y + h);
+        ctx.arcTo(x, y + h, x, y + h - r, r);
+        ctx.lineTo(x, y + r);
+        ctx.arcTo(x, y, x + r, y, r);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      /**
+       * ランダムな目地の座標にカビを初期発生させる
+       */
+      function initializeRandomMould() {
+        let r, c;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 100;
+
+        do {
+          r = Math.floor(Math.random() * rows);
+          c = Math.floor(Math.random() * cols);
+          const x = c * GRID_CELL_SIZE;
+          const y = r * GRID_CELL_SIZE;
+
+          attempts++;
+
+          if (attempts < MAX_ATTEMPTS * 0.8) {
+            if (isGroutCorner(x, y)) break;
+          } else {
+            if (isGrout(x, y)) break;
+          }
+        } while (attempts < MAX_ATTEMPTS);
+
+        // 境界チェックを追加
+        if (
+          r >= 0 &&
+          r < rows &&
+          c >= 0 &&
+          c < cols &&
+          concentration[r] &&
+          concentration[r][c] === 0
+        ) {
+          concentration[r][c] = 10;
+          activeCells.add(`${r},${c}`);
+        }
+      }
+
+      // --- Canvasリサイズとデータ初期化関数 ---
+
+      function resizeCanvas() {
+        CANVAS_WIDTH = window.innerWidth;
+        CANVAS_HEIGHT = window.innerHeight;
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        // グリッドサイズを再計算
+        cols = Math.floor(CANVAS_WIDTH / GRID_CELL_SIZE);
+        rows = Math.floor(CANVAS_HEIGHT / GRID_CELL_SIZE);
+
+        // 【修正点】concentrationとactiveCellsをここで完全にリセット・再初期化
+        concentration = Array(rows)
+          .fill(0)
+          .map(() => Array(cols).fill(0));
+        activeCells = new Set();
+
+        // 初期のカビをいくつか発生
+        for (let i = 0; i < 5; i++) {
+          initializeRandomMould();
+        }
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      // 【修正点】resizeCanvasを最後に呼び出し、初期化済みの変数を使うようにする
+
+      // --- 描画関数 (drawBackground, drawMould は前バージョンと同じなので省略) ---
+
+      /**
+       * 背景（タイルと目地）を描画
+       */
+      function drawBackground() {
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        ctx.fillStyle = "#AAAAAA";
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        ctx.fillStyle = "#FFFFFF";
+        const num_tiles_x = Math.ceil(CANVAS_WIDTH / TILE_SIZE);
+        const num_tiles_y = Math.ceil(CANVAS_HEIGHT / TILE_SIZE);
+
+        for (let ty = 0; ty < num_tiles_y; ty++) {
+          for (let tx = 0; tx < num_tiles_x; tx++) {
+            const tile_x = tx * TILE_SIZE;
+            const tile_y = ty * TILE_SIZE;
+
+            roundRect(
+              tile_x + GROUT_WIDTH,
+              tile_y + GROUT_WIDTH,
+              TILE_SIZE - GROUT_WIDTH * 2,
+              TILE_SIZE - GROUT_WIDTH * 2,
+              TILE_RADIUS
+            );
+          }
+        }
+      }
+
+      /**
+       * カビを描画
+       */
+      function drawMould() {
+        ctx.filter = "blur(0.3px)";
+
+        for (const key of activeCells) {
+          const [r, c] = key.split(",").map(Number);
+          const conc = concentration[r][c];
+
+          if (conc > 0) {
+            const x = c * GRID_CELL_SIZE;
+            const y = r * GRID_CELL_SIZE;
+
+            const ratio = conc / MAX_CONCENTRATION;
+
+            const saturation = 50 - 30 * ratio;
+            const lightness = 60 - 50 * ratio;
+
+            ctx.fillStyle = `hsl(100, ${saturation}%, ${lightness}%)`;
+
+            ctx.globalAlpha = Math.max(0.2, ratio * 0.8);
+
+            ctx.fillRect(x, y, GRID_CELL_SIZE, GRID_CELL_SIZE);
+          }
+        }
+
+        ctx.filter = "none";
+        ctx.globalAlpha = 1.0;
+      }
+
+      // --- 成長ロジック (updateMould は前バージョンと同じなので省略) ---
+      function updateMould() {
+        let nextConcentration = concentration.map((arr) => [...arr]);
+        let nextActiveCells = new Set();
+
+        let cellsToCheck = new Set(activeCells);
+
+        for (const key of activeCells) {
+          const [r, c] = key.split(",").map(Number);
+          const neighbors = [
+            [r - 1, c],
+            [r + 1, c],
+            [r, c - 1],
+            [r, c + 1],
+            [r - 1, c - 1],
+            [r - 1, c + 1],
+            [r + 1, c - 1],
+            [r + 1, c + 1],
+          ];
+          neighbors.forEach(([nr, nc]) => {
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+              cellsToCheck.add(`${nr},${nc}`);
+            }
+          });
+        }
+
+        for (const key of cellsToCheck) {
+          const [r, c] = key.split(",").map(Number);
+          const current_conc = concentration[r][c];
+
+          if (current_conc > 0) {
+            const concentration_increase = 0.5 + Math.random() * 0.5;
+            nextConcentration[r][c] = Math.min(
+              MAX_CONCENTRATION,
+              nextConcentration[r][c] + concentration_increase
+            );
+            nextActiveCells.add(key);
+          }
+
+          if (current_conc > 5) {
+            const neighbors = [
+              [r - 1, c],
+              [r + 1, c],
+              [r, c - 1],
+              [r, c + 1],
+              [r - 1, c - 1],
+              [r - 1, c + 1],
+              [r + 1, c - 1],
+              [r + 1, c + 1],
+            ];
+
+            for (const [nr, nc] of neighbors) {
+              if (
+                nr >= 0 &&
+                nr < rows &&
+                nc >= 0 &&
+                nc < cols &&
+                nextConcentration[nr][nc] < MAX_CONCENTRATION
+              ) {
+                let growth_amount =
+                  INITIAL_GROWTH_RATE *
+                  (current_conc / MAX_CONCENTRATION) *
+                  (0.1 + Math.random() * 0.3);
+
+                if (isGrout(nc * GRID_CELL_SIZE, nr * GRID_CELL_SIZE)) {
+                  growth_amount *= 1.5;
+
+                  if (isGroutCorner(nc * GRID_CELL_SIZE, nr * GRID_CELL_SIZE)) {
+                    growth_amount *= 1.5;
+                  }
+                }
+
+                if (Math.random() < 0.2) {
+                  nextConcentration[nr][nc] = Math.min(
+                    MAX_CONCENTRATION,
+                    nextConcentration[nr][nc] + growth_amount
+                  );
+                  if (nextConcentration[nr][nc] > 0) {
+                    nextActiveCells.add(`${nr},${nc}`);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        concentration = nextConcentration;
+        activeCells = nextActiveCells;
+
+        if (Math.random() < 0.005) {
+          initializeRandomMould();
+        }
+      }
+
+      // --- メインアニメーションループ ---
+      function animate() {
+        drawBackground();
+        updateMould();
+        drawMould();
+        requestAnimationFrame(animate);
+      }
+
+      // 実行順序の修正: 変数を宣言後、サイズ変更と初期化を行い、アニメーションを開始
+      resizeCanvas();
+      animate();
+    </script>
+  </body>
+</html>

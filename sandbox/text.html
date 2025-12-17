@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>カビ・汚れ・油・ホコリ掃除アニメーション</title>
+    <style>
+      body {
+        margin: 0;
+        background: #ffffff;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        background: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="dirtyCanvas"></canvas>
+
+    <script>
+      const canvas = document.getElementById("dirtyCanvas");
+      const ctx = canvas.getContext("2d");
+
+      let tiles = [];
+      let swipe;
+      let lastTime = 0;
+
+      let passCount = 0; // スワイプが端を通過した回数
+      const maxPass = 5; // 5回くらいで「本気で全部落とす」
+      let allCleared = false; // すべて落ちきったかどうか
+
+      // アニメーション開始ディレイ
+      const START_DELAY = 1000; // ms
+      let animationStarted = false;
+      let animationStartTime = null;
+
+      const SWIPE_ANGLE_DEG = -12; // オレンジ帯を少し斜めに
+      const SWIPE_ANGLE_RAD = (SWIPE_ANGLE_DEG * Math.PI) / 180;
+
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        setupScene();
+      }
+
+      function setupScene() {
+        const text = "カビ汚れ油ホコリ";
+
+        const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.07;
+        ctx.font = `bold ${fontSize}px "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif`;
+        ctx.textBaseline = "middle";
+
+        const lineHeight = fontSize * 1.2;
+        tiles = [];
+
+        // 画面を埋め尽くすようにタイル状に配置
+        for (
+          let y = lineHeight * 0.7;
+          y < window.innerHeight + lineHeight;
+          y += lineHeight
+        ) {
+          let x = -fontSize * 4 + (Math.random() - 0.5) * fontSize;
+          while (x < window.innerWidth + fontSize * 4) {
+            for (const ch of text) {
+              const w = ctx.measureText(ch).width;
+              if (x > window.innerWidth + fontSize * 4) break;
+              tiles.push({
+                ch,
+                x,
+                y,
+                baseX: x,
+                baseY: y,
+                width: w,
+                state: "static", // static / tilt / fall
+                vy: 0,
+                vr: 0,
+                rotation: 0,
+                visible: true,
+                lastHitPass: -1, // どのパスで最後に当たったか
+              });
+              x += w * 0.9;
+            }
+          }
+        }
+
+        // スワイプ設定：オレンジの光、ゆっくり大きく
+        const swipeWidth = fontSize * 2.0;
+        swipe = {
+          x: -swipeWidth,
+          width: swipeWidth,
+          speed: window.innerWidth * 0.7,
+          direction: 1,
+        };
+
+        passCount = 0;
+        allCleared = false;
+        lastTime = 0;
+        animationStarted = false;
+        animationStartTime = null;
+      }
+
+      function update(dt) {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        if (!allCleared && animationStarted) {
+          // スワイプ移動（左右に往復）
+          swipe.x += swipe.speed * swipe.direction * dt;
+
+          // スワイプが画面内に入っているか
+          const swipeVisibleNow = swipe.x < w && swipe.x + swipe.width > 0;
+
+          // 端を通過したらカウント
+          if (swipe.direction === 1 && swipe.x > w) {
+            swipe.direction = -1;
+            passCount++;
+          } else if (swipe.direction === -1 && swipe.x + swipe.width < 0) {
+            swipe.direction = 1;
+            passCount++;
+          }
+
+          const gravity = 1500;
+
+          tiles.forEach((t) => {
+            if (!t.visible) return;
+
+            const centerX = t.x + t.width / 2;
+            const left = swipe.x;
+            const right = swipe.x + swipe.width;
+
+            // スワイプが画面内に見えている状態で、帯の範囲に入ったときだけ反応
+            if (
+              swipeVisibleNow &&
+              centerX > left &&
+              centerX < right &&
+              t.lastHitPass !== passCount
+            ) {
+              t.lastHitPass = passCount;
+
+              const r = Math.random();
+              if (t.state === "static") {
+                if (r < 0.35) {
+                  // 何も起きない（次のパスに期待）
+                } else if (r < 0.7) {
+                  // 傾いて残る
+                  t.state = "tilt";
+                  t.vy = (Math.random() - 0.5) * 40;
+                  t.vr = (Math.random() - 0.5) * 3;
+                } else {
+                  // 落下
+                  t.state = "fall";
+                  t.vy = -200 - Math.random() * 200;
+                  t.vr = (Math.random() - 0.5) * 5;
+                }
+              } else if (t.state === "tilt") {
+                // 何度か掃除されたあとで落ちることも
+                if (r < 0.4) {
+                  t.state = "fall";
+                  t.vy = -200 - Math.random() * 200;
+                  t.vr = (Math.random() - 0.5) * 5;
+                }
+              }
+            }
+
+            // パスが一定回数を超えたら、残っているものは強制的に落とす
+            if (passCount >= maxPass && t.state !== "fall") {
+              t.state = "fall";
+              t.vy = -200 - Math.random() * 200;
+              t.vr = (Math.random() - 0.5) * 5;
+            }
+
+            // 状態ごとの更新
+            if (t.state === "fall") {
+              t.vy += gravity * dt;
+              t.y += t.vy * dt;
+              t.rotation += t.vr * dt;
+
+              if (t.y > h + 120) {
+                t.visible = false;
+              }
+            } else if (t.state === "tilt") {
+              t.y += t.vy * dt;
+              t.rotation += t.vr * dt;
+              t.vy *= 0.985;
+              t.vr *= 0.985;
+            }
+          });
+
+          // すべて落ちきったらフラグを立てる（帯も止める）
+          if (tiles.every((t) => !t.visible)) {
+            allCleared = true;
+          }
+        }
+      }
+
+      function draw() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        // 背景は常に白
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+
+        // 文字描画（グレー）— 帯より「下のレイヤー」
+        tiles.forEach((t) => {
+          if (!t.visible) return;
+          ctx.save();
+          ctx.translate(t.x + t.width / 2, t.y);
+          ctx.rotate(t.rotation);
+
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#bbbbbb";
+          ctx.strokeText(t.ch, -t.width / 2, 0);
+
+          ctx.fillStyle = "#777777";
+          ctx.fillText(t.ch, -t.width / 2, 0);
+
+          ctx.restore();
+        });
+
+        // スワイプの描画（オレンジの光の帯を少し斜めに）
+        // ※文字より上に描画
+        if (!allCleared && animationStarted) {
+          const centerX = swipe.x + swipe.width / 2;
+
+          ctx.save();
+          ctx.translate(centerX, h / 2);
+          ctx.rotate(SWIPE_ANGLE_RAD);
+
+          // 中心は不透明（alpha 1.0）
+          const grad = ctx.createLinearGradient(
+            -swipe.width / 2,
+            0,
+            swipe.width / 2,
+            0
+          );
+          grad.addColorStop(0, "rgba(255,165,0,0.0)");
+          grad.addColorStop(0.2, "rgba(255,165,0,0.4)");
+          grad.addColorStop(0.5, "rgba(255,220,120,1.0)"); // 不透明な中心
+          grad.addColorStop(0.8, "rgba(255,165,0,0.4)");
+          grad.addColorStop(1, "rgba(255,165,0,0.0)");
+
+          ctx.fillStyle = grad;
+          ctx.fillRect(-swipe.width / 2, -h, swipe.width, h * 2);
+          ctx.restore();
+        }
+      }
+
+      function animate(timestamp) {
+        // スタートディレイの管理
+        if (animationStartTime === null) {
+          animationStartTime = timestamp;
+        }
+
+        if (!animationStarted) {
+          const elapsed = timestamp - animationStartTime;
+          if (elapsed >= START_DELAY) {
+            animationStarted = true;
+            lastTime = timestamp; // dtのリセット
+          }
+          // ディレイ中は静止画を描くだけ
+          draw();
+          requestAnimationFrame(animate);
+          return;
+        }
+
+        if (!lastTime) lastTime = timestamp;
+        const dt = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        update(dt);
+        draw();
+
+        requestAnimationFrame(animate);
+      }
+
+      function init() {
+        resizeCanvas();
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("load", init);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mold / Dirt Pixel Demo</title>
+    <style>
+      body {
+        margin: 0;
+        background: #222;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        background: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="moldCanvas"></canvas>
+
+    <script>
+      const canvas = document.getElementById("moldCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // 画面サイズに追従
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        // 背景タイルを再描画
+        drawTiles();
+      }
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        // リサイズ時に一度カビはリセット（シンプルな実装）
+        moldSpots.length = 0;
+        spawnInitialMold();
+      });
+
+      // タイル設定
+      let tileSize = 60; // 白タイルの一辺
+      let groutSize = 4; // 目地幅
+      const tileColor = "#fdfdfd";
+      const groutColor = "#c0c0c0";
+
+      // カビの設定
+      const moldColorBase = { r: 60, g: 70, b: 60 }; // 少し緑がかったグレー
+      const spawnProbability = 0.02; // 1フレームごとに新規カビ発生の確率
+      const moldSpots = [];
+
+      class MoldSpot {
+        constructor(x, y) {
+          this.originX = Math.round(x);
+          this.originY = Math.round(y);
+
+          this.maxRadius = 40 + Math.random() * 80; // どこまで広がるか
+          this.alive = true;
+
+          // ピクセル単位のカビセル
+          this.cells = []; // {x, y, intensity}
+          this.cellSet = new Set(); // "x_y" で重複防止
+
+          this.addCell(this.originX, this.originY);
+        }
+
+        key(x, y) {
+          return `${x}_${y}`;
+        }
+
+        addCell(x, y) {
+          const k = this.key(x, y);
+          if (this.cellSet.has(k)) return;
+          this.cellSet.add(k);
+
+          this.cells.push({
+            x,
+            y,
+            intensity: 0.08 + Math.random() * 0.08, // 初期は薄め
+          });
+        }
+
+        update() {
+          if (!this.alive) return;
+
+          const maxNewCellsPerFrame = 10; // 1フレームで増殖させる最大数
+          let added = 0;
+
+          // 既存セルをなぞりながら、たまに隣接セルへ増殖
+          for (let i = 0; i < this.cells.length; i++) {
+            const c = this.cells[i];
+
+            // 濃さを少しずつ上げる
+            if (c.intensity < 0.9) {
+              c.intensity += 0.0025;
+            }
+
+            // 低確率で周囲に増殖
+            if (Math.random() < 0.02 && added < maxNewCellsPerFrame) {
+              const dirs = [
+                [1, 0],
+                [-1, 0],
+                [0, 1],
+                [0, -1],
+                [1, 1],
+                [1, -1],
+                [-1, 1],
+                [-1, -1],
+              ];
+              const [dx, dy] = dirs[Math.floor(Math.random() * dirs.length)];
+              const nx = c.x + dx;
+              const ny = c.y + dy;
+
+              const dist = Math.hypot(nx - this.originX, ny - this.originY);
+              if (dist <= this.maxRadius) {
+                this.addCell(nx, ny);
+                added++;
+              }
+            }
+          }
+
+          // ある程度広がったら「成長終了」とする
+          const roughLimit = this.maxRadius * this.maxRadius * 0.25;
+          if (this.cells.length > roughLimit) {
+            this.alive = false;
+          }
+        }
+
+        draw(ctx) {
+          // 位置は固定済みなので、描画は純粋にループのみ（チカチカ防止）
+          for (const c of this.cells) {
+            const alpha = c.intensity;
+            ctx.fillStyle = `rgba(${moldColorBase.r},${moldColorBase.g},${moldColorBase.b},${alpha})`;
+            ctx.fillRect(c.x, c.y, 1, 1); // 1px 四角で描画
+          }
+        }
+      }
+
+      function drawTiles() {
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // 全体を目地色で塗る
+        ctx.fillStyle = groutColor;
+        ctx.fillRect(0, 0, W, H);
+
+        // 白タイルを敷き詰める
+        for (let y = 0; y < H; y += tileSize + groutSize) {
+          for (let x = 0; x < W; x += tileSize + groutSize) {
+            ctx.fillStyle = tileColor;
+            ctx.fillRect(
+              x + groutSize / 2,
+              y + groutSize / 2,
+              tileSize,
+              tileSize
+            );
+          }
+        }
+      }
+
+      function spawnMoldSpotAlongGrout() {
+        const W = canvas.width;
+        const H = canvas.height;
+
+        const vertical = Math.random() < 0.5;
+
+        if (vertical) {
+          // 縦目地
+          const colCount = Math.ceil(W / (tileSize + groutSize));
+          const colIndex = Math.floor(Math.random() * colCount);
+          const xBase = colIndex * (tileSize + groutSize);
+          // 目地の中心付近
+          const x = Math.round(xBase + groutSize / 2);
+
+          const y = Math.round(Math.random() * H);
+          moldSpots.push(new MoldSpot(x, y));
+        } else {
+          // 横目地
+          const rowCount = Math.ceil(H / (tileSize + groutSize));
+          const rowIndex = Math.floor(Math.random() * rowCount);
+          const yBase = rowIndex * (tileSize + groutSize);
+          const y = Math.round(yBase + groutSize / 2);
+
+          const x = Math.round(Math.random() * W);
+          moldSpots.push(new MoldSpot(x, y));
+        }
+      }
+
+      function spawnInitialMold() {
+        for (let i = 0; i < 12; i++) {
+          spawnMoldSpotAlongGrout();
+        }
+      }
+
+      function update() {
+        // 時々、新しいカビを目地から発生
+        if (Math.random() < spawnProbability) {
+          spawnMoldSpotAlongGrout();
+        }
+
+        moldSpots.forEach((spot) => spot.update());
+
+        // メモリ対策：完全に成長し終わったスポットだけ残しすぎない
+        if (moldSpots.length > 2000) {
+          for (let i = moldSpots.length - 1; i >= 0; i--) {
+            if (!moldSpots[i].alive) {
+              moldSpots.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      function draw() {
+        // 背景タイルを毎フレーム描き直す（パターンは固定なのでチカチカしない）
+        drawTiles();
+
+        // カビを描画
+        moldSpots.forEach((spot) => spot.draw(ctx));
+      }
+
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      // 初期化
+      resizeCanvas();
+      spawnInitialMold();
+      loop();
+    </script>
+  </body>
+</html>

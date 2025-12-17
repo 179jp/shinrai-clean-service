@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>タイルのカビ成長</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #2c2c2c;
+        font-family: sans-serif;
+      }
+      canvas {
+        border: 2px solid #444;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // キャンバスサイズ
+      canvas.width = 600;
+      canvas.height = 600;
+
+      // タイルの設定
+      const tileSize = 80;
+      const groutWidth = 4;
+      const cols = Math.floor(canvas.width / (tileSize + groutWidth));
+      const rows = Math.floor(canvas.height / (tileSize + groutWidth));
+
+      // カビのデータ構造（各ピクセルの汚れレベル）
+      const moldGrid = [];
+      for (let i = 0; i < canvas.width; i++) {
+        moldGrid[i] = [];
+        for (let j = 0; j < canvas.height; j++) {
+          moldGrid[i][j] = 0;
+        }
+      }
+
+      // 目路の位置を記録
+      const groutPositions = [];
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * (tileSize + groutWidth);
+          const y = row * (tileSize + groutWidth);
+
+          // 縦の目路
+          for (let i = 0; i < groutWidth; i++) {
+            for (let j = 0; j < tileSize + groutWidth; j++) {
+              groutPositions.push({ x: x + i, y: y + j });
+            }
+          }
+
+          // 横の目路
+          for (let i = 0; i < tileSize + groutWidth; i++) {
+            for (let j = 0; j < groutWidth; j++) {
+              groutPositions.push({ x: x + i, y: y + j });
+            }
+          }
+        }
+      }
+
+      // 背景を描画
+      function drawBackground() {
+        // 目路
+        ctx.fillStyle = "#999999";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // タイル
+        ctx.fillStyle = "#ffffff";
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const x = col * (tileSize + groutWidth) + groutWidth;
+            const y = row * (tileSize + groutWidth) + groutWidth;
+            ctx.fillRect(x, y, tileSize, tileSize);
+          }
+        }
+      }
+
+      // カビを成長させる
+      function growMold() {
+        // 目路からランダムに新しいカビを発生
+        if (Math.random() < 0.3 && groutPositions.length > 0) {
+          const pos =
+            groutPositions[Math.floor(Math.random() * groutPositions.length)];
+          if (pos.x < canvas.width && pos.y < canvas.height) {
+            moldGrid[pos.x][pos.y] = Math.max(moldGrid[pos.x][pos.y], 1);
+          }
+        }
+
+        // 既存のカビを広げる
+        const newMold = [];
+        for (let x = 1; x < canvas.width - 1; x++) {
+          for (let y = 1; y < canvas.height - 1; y++) {
+            if (moldGrid[x][y] > 0) {
+              // 隣接セルにランダムに広がる
+              const directions = [
+                [-1, 0],
+                [1, 0],
+                [0, -1],
+                [0, 1],
+                [-1, -1],
+                [1, 1],
+                [-1, 1],
+                [1, -1],
+              ];
+
+              for (const [dx, dy] of directions) {
+                if (Math.random() < 0.15) {
+                  const nx = x + dx;
+                  const ny = y + dy;
+                  if (
+                    nx >= 0 &&
+                    nx < canvas.width &&
+                    ny >= 0 &&
+                    ny < canvas.height
+                  ) {
+                    newMold.push({
+                      x: nx,
+                      y: ny,
+                      level: Math.min(moldGrid[x][y] + 0.5, 50),
+                    });
+                  }
+                }
+              }
+
+              // 現在のセルも少し濃くなる
+              if (Math.random() < 0.1) {
+                moldGrid[x][y] = Math.min(moldGrid[x][y] + 0.3, 50);
+              }
+            }
+          }
+        }
+
+        // 新しいカビを適用
+        for (const mold of newMold) {
+          moldGrid[mold.x][mold.y] = Math.max(
+            moldGrid[mold.x][mold.y],
+            mold.level
+          );
+        }
+      }
+
+      // カビを描画
+      function drawMold() {
+        for (let x = 0; x < canvas.width; x++) {
+          for (let y = 0; y < canvas.height; y++) {
+            if (moldGrid[x][y] > 0) {
+              const intensity = Math.min(moldGrid[x][y] / 50, 1);
+              const color = Math.floor(150 - intensity * 120); // 濃くなるにつれて暗く
+              const alpha = 0.3 + intensity * 0.7;
+
+              // 緑がかった茶色のカビ
+              const r = color - 20;
+              const g = color;
+              const b = color - 40;
+
+              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+              ctx.fillRect(x, y, 1, 1);
+            }
+          }
+        }
+      }
+
+      // アニメーションループ
+      function animate() {
+        drawBackground();
+        growMold();
+        drawMold();
+
+        setTimeout(() => {
+          requestAnimationFrame(animate);
+        }, 100); // 100msごとに更新
+      }
+
+      // 初期描画とアニメーション開始
+      drawBackground();
+      animate();
+    </script>
+  </body>
+</html>

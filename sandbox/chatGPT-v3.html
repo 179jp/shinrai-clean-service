@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>カビ＆ヨゴレ デモ</title>
+    <style>
+      body {
+        margin: 0;
+        background: #222;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        background: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="moldCanvas"></canvas>
+
+    <script>
+      const canvas = document.getElementById("moldCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // タイル設定
+      const tileSize = 60; // 白タイルの一辺
+      const groutSize = 4; // 目地幅
+      const tileColor = "#fdfdfd";
+      const groutColor = "#c0c0c0";
+
+      // カビ／ヨゴレ設定
+      const spawnProbability = 0.02; // 毎フレーム 新しいクラスターが生える確率
+      const molds = [];
+
+      // 画面サイズに追従
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drawTiles(); // 背景再描画
+        molds.length = 0; // シンプルにリセット
+        spawnInitialMold();
+      }
+      window.addEventListener("resize", resizeCanvas);
+
+      // 角丸矩形を描くヘルパー
+      function fillRoundRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.arcTo(x + w, y, x + w, y + radius, radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius);
+        ctx.lineTo(x + radius, y + h);
+        ctx.arcTo(x, y + h, x, y + h - radius, radius);
+        ctx.lineTo(x, y + radius);
+        ctx.arcTo(x, y, x + radius, y, radius);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function drawTiles() {
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // 全面を目地色で塗る
+        ctx.fillStyle = groutColor;
+        ctx.fillRect(0, 0, W, H);
+
+        // 白の角丸タイルを敷き詰める
+        const cornerRadius = 8;
+        for (let y = 0; y < H; y += tileSize + groutSize) {
+          for (let x = 0; x < W; x += tileSize + groutSize) {
+            ctx.fillStyle = tileColor;
+            const tx = x + groutSize / 2;
+            const ty = y + groutSize / 2;
+            fillRoundRect(ctx, tx, ty, tileSize, tileSize, cornerRadius);
+          }
+        }
+      }
+
+      class MoldCluster {
+        // type: 'kabi' or 'yogore'
+        constructor(x, y, type = "kabi") {
+          this.originX = x;
+          this.originY = y;
+          this.type = type; // 'kabi' / 'yogore'
+
+          this.maxRadius = 40 + Math.random() * 80;
+          this.alive = true;
+
+          // クラスターごとの色のベース設定
+          if (this.type === "kabi") {
+            // くすんだ緑〜青緑
+            this.hueBase = 110 + Math.random() * 20; // 110〜130
+            this.satBase = 18 + Math.random() * 12; // 18〜30
+            this.lightBase = 38 + Math.random() * 10; // 38〜48
+          } else {
+            // ヨゴレはグレー系
+            this.hueBase = 0; // 実質無視（彩度低）
+            this.satBase = 0 + Math.random() * 6; // 0〜6
+            this.lightBase = 45 + Math.random() * 12; // 45〜57
+          }
+
+          this.glyphs = []; // {x, y, size, angle, intensity, hue, sat, light, char}
+          this.glyphSet = new Set();
+
+          if (this.type === "kabi") {
+            this.addKaBiPair(x, y);
+          } else {
+            this.addYogoreGroup(x, y);
+          }
+        }
+
+        key(x, y, char) {
+          return `${Math.round(x)}_${Math.round(y)}_${char}`;
+        }
+
+        addGlyph(x, y, char) {
+          const k = this.key(x, y, char);
+          if (this.glyphSet.has(k)) return;
+          this.glyphSet.add(k);
+
+          const size = 4 + Math.random() * 6; // 小さめ初期サイズ
+          const angle = (Math.random() - 0.5) * 2.0; // -1.0〜1.0rad くらい、かなりバラバラ
+          const intensity = 0.25 + Math.random() * 0.2; // 初期濃さ
+
+          // 色バリエーション（クラスター基準から少し揺らす）
+          const hue =
+            this.hueBase +
+            (Math.random() - 0.5) * (this.type === "kabi" ? 10 : 4);
+          const sat =
+            this.satBase +
+            (Math.random() - 0.5) * (this.type === "kabi" ? 6 : 3);
+          const light =
+            this.lightBase +
+            (Math.random() - 0.5) * (this.type === "kabi" ? 6 : 6);
+
+          this.glyphs.push({
+            x,
+            y,
+            size,
+            angle,
+            intensity,
+            hue,
+            sat,
+            light,
+            char,
+          });
+        }
+
+        addKaBiPair(x, y) {
+          // 「カ」を基準位置に
+          this.addGlyph(x, y, "カ");
+
+          // 「カ」から近い位置に「ビ」を配置（セットに見える距離）
+          const dist = 5 + Math.random() * 6; // 5〜11px
+          const theta = Math.random() * Math.PI * 2;
+          const bx = x + Math.cos(theta) * dist;
+          const by = y + Math.sin(theta) * dist;
+          this.addGlyph(bx, by, "ビ");
+        }
+
+        addYogoreGroup(x, y) {
+          // 「ヨ」を基準
+          this.addGlyph(x, y, "ヨ");
+
+          // 「ゴ」「レ」を近くに配置
+          const baseDist = 6;
+          const offsets = [
+            { char: "ゴ", dx: baseDist, dy: 0 },
+            { char: "レ", dx: baseDist * 0.5, dy: baseDist * 0.8 },
+          ];
+          // 少しランダムさも足す
+          for (const o of offsets) {
+            const jitterX = (Math.random() - 0.5) * 4;
+            const jitterY = (Math.random() - 0.5) * 4;
+            this.addGlyph(x + o.dx + jitterX, y + o.dy + jitterY, o.char);
+          }
+        }
+
+        update() {
+          if (!this.alive) return;
+
+          const maxNewPerFrame = 3;
+          let added = 0;
+
+          for (const g of this.glyphs) {
+            // 文字サイズを少しずつ大きく（最大20px程度）
+            if (g.size < 20) {
+              g.size += 0.02;
+            }
+
+            // 濃さも少しずつ強く
+            if (g.intensity < 1.0) {
+              g.intensity += 0.002;
+            }
+
+            // カビは少し暗く＆やや鮮やかに、ヨゴレはほぼグレーで暗く
+            if (this.type === "kabi") {
+              g.light = Math.max(28, g.light - 0.0012);
+              g.sat = Math.min(40, g.sat + 0.0008);
+            } else {
+              g.light = Math.max(30, g.light - 0.001);
+              g.sat = Math.min(10, g.sat + 0.0002);
+            }
+
+            // たまに周囲に新しいクラスターの核を増殖
+            if (Math.random() < 0.02 && added < maxNewPerFrame) {
+              const dirs = [
+                [1, 0],
+                [-1, 0],
+                [0, 1],
+                [0, -1],
+                [1, 1],
+                [1, -1],
+                [-1, 1],
+                [-1, -1],
+              ];
+              const [dx, dy] = dirs[Math.floor(Math.random() * dirs.length)];
+
+              const distUnit = 14;
+              const nx = g.x + dx * distUnit;
+              const ny = g.y + dy * distUnit;
+
+              const distFromOrigin = Math.hypot(
+                nx - this.originX,
+                ny - this.originY
+              );
+              if (distFromOrigin <= this.maxRadius) {
+                if (this.type === "kabi") {
+                  this.addKaBiPair(nx, ny);
+                } else {
+                  this.addYogoreGroup(nx, ny);
+                }
+                added++;
+              }
+            }
+          }
+
+          // ある程度増えたら「成長終了」
+          if (this.glyphs.length > this.maxRadius * 1.3) {
+            this.alive = false;
+          }
+        }
+
+        draw(ctx) {
+          for (const g of this.glyphs) {
+            ctx.save();
+            ctx.translate(g.x, g.y);
+            ctx.rotate(g.angle);
+
+            ctx.font = `bold ${g.size}px "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            const strokeLight = Math.max(0, g.light - 18);
+            const strokeAlpha = g.intensity * 0.55;
+            const fillAlpha = g.intensity;
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = `hsla(${g.hue}, ${g.sat}%, ${strokeLight}%, ${strokeAlpha})`;
+            ctx.fillStyle = `hsla(${g.hue}, ${g.sat}%, ${g.light}%, ${fillAlpha})`;
+
+            ctx.strokeText(g.char, 0, 0);
+            ctx.fillText(g.char, 0, 0);
+
+            ctx.restore();
+          }
+        }
+      }
+
+      function spawnMoldAlongGrout() {
+        const W = canvas.width;
+        const H = canvas.height;
+
+        const vertical = Math.random() < 0.5;
+        const type = Math.random() < 0.7 ? "kabi" : "yogore"; // 7:3 くらいでカビ優勢
+
+        if (vertical) {
+          const colCount = Math.ceil(W / (tileSize + groutSize));
+          const colIndex = Math.floor(Math.random() * colCount);
+          const xBase = colIndex * (tileSize + groutSize);
+          const x = Math.round(xBase + groutSize / 2);
+
+          const y = Math.round(Math.random() * H);
+          molds.push(new MoldCluster(x, y, type));
+        } else {
+          const rowCount = Math.ceil(H / (tileSize + groutSize));
+          const rowIndex = Math.floor(Math.random() * rowCount);
+          const yBase = rowIndex * (tileSize + groutSize);
+          const y = Math.round(yBase + groutSize / 2);
+
+          const x = Math.round(Math.random() * W);
+          molds.push(new MoldCluster(x, y, type));
+        }
+      }
+
+      function spawnInitialMold() {
+        for (let i = 0; i < 10; i++) {
+          spawnMoldAlongGrout();
+        }
+      }
+
+      function update() {
+        // 新しいクラスターをときどき生成
+        if (Math.random() < spawnProbability) {
+          spawnMoldAlongGrout();
+        }
+
+        for (const m of molds) {
+          m.update();
+        }
+
+        // メモリ対策（死んだクラスターをたまに間引き）
+        if (molds.length > 1000) {
+          for (let i = molds.length - 1; i >= 0; i--) {
+            if (!molds[i].alive) {
+              molds.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      function draw() {
+        drawTiles();
+        for (const m of molds) {
+          m.draw(ctx);
+        }
+      }
+
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      // 初期化
+      resizeCanvas();
+      spawnInitialMold();
+      loop();
+    </script>
+  </body>
+</html>
