@@ -85,16 +85,16 @@ const company = {
                                         季節のおすすめメニューをご案内します。
                                 </p>
                         </div>
-                        <div class="hero__meta">
+                        <dl class="hero__meta">
                                 <div class="stat">
-                                        <p class="label">対応エリア</p>
-                                        <p class="value">首都圏・近郊</p>
+                                        <dt>対応エリア</dt>
+                                        <dd>首都圏・近郊</dd>
                                 </div>
                                 <div class="stat">
-                                        <p class="label">営業時間</p>
-                                        <p class="value">9:00 - 18:00</p>
+                                        <dt>営業時間</dt>
+                                        <dd>9:00 - 18:00</dd>
                                 </div>
-                        </div>
+                        </dl>
                 </header>
 
                 <section class="section" id="services">
@@ -106,7 +106,7 @@ const company = {
 
                         <div class="grid grid--three">
                                 <div class="panel">
-                                        <div class="panel__title">スポットメニュー</div>
+                                        <p class="panel__title">スポットメニュー</p>
                                         <dl class="list">
                                                 {spotServices.map((item) => (
                                                         <div class="list__row" role="listitem">
@@ -118,7 +118,7 @@ const company = {
                                 </div>
 
                                 <div class="panel">
-                                        <div class="panel__title">定期サービス</div>
+                                        <p class="panel__title">定期サービス</p>
                                         <div class="table">
                                                 <div class="table__head">
                                                         <span>セット内容</span>
@@ -136,7 +136,7 @@ const company = {
                                 </div>
 
                                 <div class="panel">
-                                        <div class="panel__title">オプション</div>
+                                        <p class="panel__title">オプション</p>
                                         <dl class="list">
                                                 {options.map((option) => (
                                                         <div class="list__row" role="listitem">
@@ -149,7 +149,7 @@ const company = {
                         </div>
 
                         <div class="panel panel--muted">
-                                <div class="panel__title">セット割</div>
+                                <p class="panel__title">セット割</p>
                                 <ul class="bullets">
                                         {bundleDiscounts.map((bundle) => (
                                                 <li>{bundle}</li>
@@ -172,11 +172,9 @@ const company = {
                                 <h2>季節のおすすめ</h2>
                                 <p class="description">Markdownファイル（src/content/seasonal.md）を編集するだけで内容を更新できます。</p>
                         </div>
-                        <div class="panel panel--muted">
-                                <article class="markdown">
-                                        <Seasonal />
-                                </article>
-                        </div>
+                        <article class="panel panel--muted markdown">
+                                <Seasonal />
+                        </article>
                 </section>
 
                 <section class="section" id="company">
@@ -185,39 +183,39 @@ const company = {
                                 <h2>会社情報</h2>
                                 <p class="description">運営情報は後日差し替え予定のダミーデータです。</p>
                         </div>
-                        <div class="panel">
-                                <dl class="company">
-                                        <div class="company__row">
-                                                <dt>会社名</dt>
-                                                <dd>{company.name}</dd>
-                                        </div>
-                                        <div class="company__row">
-                                                <dt>代表者</dt>
-                                                <dd>{company.representative}</dd>
-                                        </div>
-                                        <div class="company__row">
-                                                <dt>住所</dt>
-                                                <dd>{company.address}</dd>
-                                        </div>
-                                        <div class="company__row">
-                                                <dt>電話</dt>
-                                                <dd>{company.phone}</dd>
-                                        </div>
-                                        <div class="company__row">
-                                                <dt>メール</dt>
-                                                <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
-                                        </div>
-                                </dl>
-                        </div>
+                        <dl class="panel company">
+                                <div class="company__row">
+                                        <dt>会社名</dt>
+                                        <dd>{company.name}</dd>
+                                </div>
+                                <div class="company__row">
+                                        <dt>代表者</dt>
+                                        <dd>{company.representative}</dd>
+                                </div>
+                                <div class="company__row">
+                                        <dt>住所</dt>
+                                        <dd>{company.address}</dd>
+                                </div>
+                                <div class="company__row">
+                                        <dt>電話</dt>
+                                        <dd>{company.phone}</dd>
+                                </div>
+                                <div class="company__row">
+                                        <dt>メール</dt>
+                                        <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
+                                </div>
+                        </dl>
                 </section>
         </div>
 </Layout>
 
 <style>
         .page {
-                max-width: 1200px;
+                max-width: 1140px;
                 margin: 0 auto;
-                padding: 48px 24px 96px;
+                padding: 56px 24px 104px;
+                border-left: 1px solid #e5e7eb;
+                border-right: 1px solid #e5e7eb;
         }
 
         .hero {
@@ -225,10 +223,8 @@ const company = {
                 grid-template-columns: 2fr 1fr;
                 gap: 24px;
                 align-items: end;
-                padding: 48px;
-                border: 1px solid #e5e7eb;
-                border-radius: 16px;
-                background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+                padding: 48px 24px 40px;
+                border-bottom: 1px solid #0f172a;
         }
 
         .hero__copy h1 {
@@ -240,47 +236,57 @@ const company = {
 
         .hero__copy .lede {
                 margin: 0;
-                color: #475569;
+                color: #334155;
         }
 
         .hero__meta {
                 display: grid;
-                gap: 12px;
+                gap: 10px;
                 align-self: center;
+                margin: 0;
+                padding: 0;
         }
 
         .stat {
-                border: 1px solid #e5e7eb;
-                border-radius: 12px;
-                padding: 14px;
-                background: #ffffff;
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 4px;
+                padding: 8px 0;
+                border-bottom: 1px solid #e2e8f0;
         }
 
-        .stat .label {
-                font-size: 12px;
-                letter-spacing: 0.08em;
+        .stat:last-child {
+                border-bottom: none;
+        }
+
+        .stat dt {
                 text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-size: 11px;
                 color: #94a3b8;
-                margin: 0 0 4px;
+                margin: 0;
         }
 
-        .stat .value {
+        .stat dd {
                 margin: 0;
                 font-weight: 600;
         }
 
         .section {
-                margin-top: 72px;
+                margin-top: 88px;
         }
 
         .section__header {
-                margin-bottom: 20px;
+                margin-bottom: 24px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #0f172a;
         }
 
         h2 {
-                margin: 6px 0 8px;
-                font-size: 26px;
-                letter-spacing: 0.02em;
+                margin: 10px 0 6px;
+                font-size: 28px;
+                letter-spacing: 0.06em;
+                font-weight: 700;
         }
 
         .description {
@@ -298,7 +304,7 @@ const company = {
 
         .grid {
                 display: grid;
-                gap: 16px;
+                gap: 22px;
         }
 
         .grid--three {
@@ -306,20 +312,20 @@ const company = {
         }
 
         .panel {
-                border: 1px solid #e5e7eb;
-                border-radius: 14px;
-                padding: 20px;
-                background: #ffffff;
+                border-top: 1px solid #0f172a;
+                padding: 18px 0 16px;
         }
 
         .panel__title {
-                font-weight: 600;
-                margin-bottom: 12px;
-                letter-spacing: 0.02em;
+                font-weight: 700;
+                margin-bottom: 10px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                font-size: 13px;
         }
 
         .panel--muted {
-                background: #f8fafc;
+                background: transparent;
         }
 
         .list {
