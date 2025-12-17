@@ -79,8 +79,67 @@ body {
   background: var(--bkg-white2);
 }
 
+.service-tabs {
+  display: inline-flex;
+  gap: 10px;
+  background: var(--bkg-white1);
+  padding: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  margin-bottom: 18px;
+}
+
+.service-tab {
+  border: none;
+  background: transparent;
+  padding: 10px 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-tab.is-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.service-slider {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 360px);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 4px 4px;
+  margin: 0 -6px;
+}
+
+.service-card {
+  scroll-snap-align: start;
+  min-height: 100%;
+}
+
+.service-card .panel__title {
+  margin-bottom: 2px;
+}
+
 #seasonal {
   background: var(--bkg-white3);
+}
+
+.seasonal-block {
+  display: grid;
+  gap: 12px;
+}
+
+.seasonal-grid {
+  display: grid;
+  gap: 12px;
 }
 
 #company {
@@ -266,6 +325,51 @@ dd {
 
 .company dd {
   font-weight: 600;
+}
+
+.company__row--icon .icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  fill: currentColor;
+}
+
+.company__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.contact-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+.month-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  background: var(--color-surface);
+  padding: 8px 14px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--border-soft);
+}
+
+.month-badge__months {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.month-badge__season {
+  color: var(--color-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
 }
 
 @media (max-width: 960px) {

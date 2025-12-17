@@ -1,0 +1,32 @@
+---
+import MonthBadge from './MonthBadge.astro';
+import seasonalSource from '../content/seasonal.mdx?raw';
+
+const sections = seasonalSource
+  .split('### ')
+  .filter(Boolean)
+  .map((chunk) => {
+    const lines = chunk.split('\n').filter((line) => line.trim().length);
+    const title = lines.shift()?.trim() ?? '';
+    const items = lines
+      .filter((line) => line.startsWith('- '))
+      .map((line) => line.replace(/^-\s*/, '').trim());
+
+    return { title, items };
+  });
+---
+<div class="seasonal-block">
+  <MonthBadge months="12 & 1" season="Winter" />
+  <div class="seasonal-grid">
+    {sections.map((section) => (
+      <article class="panel panel--muted markdown">
+        <h3>{section.title}</h3>
+        <ul>
+          {section.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </div>
+</div>
