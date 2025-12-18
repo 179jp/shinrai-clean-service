@@ -1,5 +1,8 @@
 import type { RegularPlan, ServiceListItem } from '../../helper/serviceTypes';
 
+// 料金表の更新日
+export const priceDate = '2025年3月1日';
+
 // 水回りのサービス＆料金
 export const waterItems: ServiceListItem[] = [
   { name: 'キッチン', price: '¥19,000' },
