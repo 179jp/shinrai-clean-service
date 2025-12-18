@@ -1,4 +1,4 @@
-import type { RegularPlan, ServiceListItem } from '../../helper/serviceSections';
+import type { RegularPlan, ServiceListItem } from '../../helper/serviceTypes';
 
 // 水回りのサービス＆料金
 export const waterItems: ServiceListItem[] = [
