@@ -105,6 +105,7 @@ body.no-scroll {
   text-transform: uppercase;
   border-radius: 999px;
   cursor: pointer;
+  color: var(--color-subtle);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -798,7 +799,7 @@ h2 {
     padding: 48px 18px 40px;
   }
   .hero__lead {
-    bottom: 8em;
+    bottom: 8.5em;
     right: 0em;
     font-size: 15px;
     color: var(--color-subtle);
