@@ -15,6 +15,10 @@ const requestOptions = Array.from(
   )
 );
 
+requestOptions.push('その他');
+
+const intentOptions = ['依頼したい', '見積りしたい', '相談したい'];
+
 const timeSlots = [
   '09:00',
   '10:00',
@@ -69,14 +73,36 @@ const timeSlots = [
       </p>
 
       <label class="form-field">
-        <span class="form-label">ご依頼（複数選択可）</span>
-        <select name="ご依頼" id="request" multiple required>
-          {requestOptions.map((option) => <option>{option}</option>)}
+        <span class="form-label">内容</span>
+        <select name="内容" id="contactIntent" required>
+          {intentOptions.map((option) => (
+            <option value={option}>{option}</option>
+          ))}
         </select>
-        <small class="form-help">※ ⌘/Ctrl キーで複数選択できます</small>
       </label>
 
       <fieldset class="form-field">
+        <legend class="form-label">ご依頼（複数選択可）</legend>
+        <div class="request-options" role="group" aria-label="ご依頼">
+          {requestOptions.map((option, index) => {
+            const optionId = `request-${index}`;
+            return (
+              <label class="request-option" for={optionId}>
+                <input
+                  type="checkbox"
+                  id={optionId}
+                  name="ご依頼"
+                  value={option}
+                  required={index === 0}
+                />
+                <span>{option}</span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset class="form-field datetime-wrapper" data-intent-section>
         <legend class="form-label">ご希望の日時</legend>
         <div class="datetime-preferences">
           {[1, 2, 3].map((index) => (
@@ -92,18 +118,28 @@ const timeSlots = [
               <div class="datetime-preference__fields">
                 <label class="form-subfield">
                   <span>日付</span>
-                  <input type="date" name={`希望日_${index}`} required={index === 1} />
+                  <input
+                    type="date"
+                    name={`希望日_${index}`}
+                    data-intent-required={index === 1}
+                  />
                 </label>
                 <label class="form-subfield">
                   <span>時間</span>
                   <div class="time-range">
-                    <select name={`開始時間_${index}`} required={index === 1}>
+                    <select
+                      name={`開始時間_${index}`}
+                      data-intent-required={index === 1}
+                    >
                       {timeSlots.map((slot) => (
                         <option value={slot}>{slot}</option>
                       ))}
                     </select>
                     <span class="time-separator">〜</span>
-                    <select name={`終了時間_${index}`} required={index === 1}>
+                    <select
+                      name={`終了時間_${index}`}
+                      data-intent-required={index === 1}
+                    >
                       {timeSlots.map((slot) => (
                         <option value={slot}>{slot}</option>
                       ))}
@@ -127,8 +163,8 @@ const timeSlots = [
       </label>
 
       <label class="form-field">
-        <span class="form-label">TEL</span>
-        <input type="tel" name="TEL" placeholder="固定電話など" />
+        <span class="form-label">メールアドレス</span>
+        <input type="email" name="メールアドレス" placeholder="example@example.com" />
       </label>
 
       <label class="form-field">
@@ -152,6 +188,11 @@ const timeSlots = [
   const contactTriggers = Array.from(
     document.querySelectorAll('[data-contact-trigger]')
   );
+  const intentSelect = document.getElementById('contactIntent');
+  const scheduleSection = document.querySelector('[data-intent-section]');
+  const intentRequiredFields = Array.from(
+    document.querySelectorAll('[data-intent-required="true"]')
+  );
   let lastActiveElement;
 
   const closeContactDrawer = () => {
@@ -169,6 +210,21 @@ const timeSlots = [
     contactOverlay?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
     contactDrawer?.focus();
+    updateScheduleVisibility();
+  };
+
+  const updateScheduleVisibility = () => {
+    const shouldShow = intentSelect?.value === '依頼したい';
+    scheduleSection?.classList.toggle('is-hidden', !shouldShow);
+    intentRequiredFields.forEach((field) => {
+      if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+        if (shouldShow && field.dataset.intentRequired === 'true') {
+          field.required = true;
+        } else {
+          field.required = false;
+        }
+      }
+    });
   };
 
   contactTriggers.forEach((trigger) => {
@@ -193,4 +249,6 @@ const timeSlots = [
       closeContactDrawer();
     }
   });
+
+  intentSelect?.addEventListener('change', updateScheduleVisibility);
 </script>
