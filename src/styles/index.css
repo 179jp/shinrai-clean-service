@@ -817,12 +817,23 @@ h2 {
     grid-template-columns: 1fr;
   }
 
+  .panel__title {
+    color: var(--color-primary);
+    font-size: 15px;
+  }
+
+  .table__head,
+  .table__row {
+    grid-template-columns: 1.25fr 1fr 1fr 1fr;
+  }
   .table {
-    width: 100%;
+    width: calc(100% + 1em);
+    margin-inline-end: -1em;
     overflow-x: auto;
     .table__head,
     .table__row {
-      width: 180%;
+      width: 145%;
+      padding-right: 1.5em;
     }
   }
 
