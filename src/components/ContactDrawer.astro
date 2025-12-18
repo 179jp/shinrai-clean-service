@@ -1,5 +1,6 @@
 ---
 import { serviceSections } from '../content/serviceSections';
+import { company } from '../content/company';
 
 const requestOptions = Array.from(
   new Set(
@@ -45,7 +46,16 @@ const timeSlots = [
     <div class="contact-drawer__header">
       <div>
         <p class="eyebrow">Contact</p>
-        <h3 class="contact-drawer__title">お見積り・ご依頼フォーム</h3>
+        <h3 class="contact-drawer__title" id="contactDrawerTitle">
+          お見積り・ご依頼フォーム
+        </h3>
+        <a
+          class="contact-drawer__call"
+          id="contactDrawerCall"
+          href={`tel:${company.phone}`}
+        >
+          汚れの天敵に電話する
+        </a>
       </div>
       <button
         type="button"
@@ -65,6 +75,7 @@ const timeSlots = [
       data-netlify-honeypot="bot-field"
     >
       <input type="hidden" name="form-name" value="contact" />
+      <input type="hidden" name="お問い合わせ先" id="contactLabelField" value="" />
       <p class="visually-hidden">
         <label>
           送信しないでください
@@ -93,7 +104,7 @@ const timeSlots = [
                   id={optionId}
                   name="ご依頼"
                   value={option}
-                  required={index === 0}
+                  data-require-group={index === 0}
                 />
                 <span>{option}</span>
               </label>
@@ -182,11 +193,19 @@ const timeSlots = [
 </div>
 
 <script>
+  const defaultContactLabel = '汚れの天敵';
   const contactOverlay = document.getElementById('contactOverlay');
   const contactDrawer = document.getElementById('contactDrawerPanel');
   const contactCloseButton = document.getElementById('contactDrawerClose');
   const contactTriggers = Array.from(
     document.querySelectorAll('[data-contact-trigger]')
+  );
+  const contactTitle = document.getElementById('contactDrawerTitle');
+  const contactCallLink = document.getElementById('contactDrawerCall');
+  const contactSubmit = document.querySelector('.contact-submit');
+  const contactLabelField = document.getElementById('contactLabelField');
+  const requestInputs = Array.from(
+    document.querySelectorAll('input[name="ご依頼"]')
   );
   const intentSelect = document.getElementById('contactIntent');
   const scheduleSection = document.querySelector('[data-intent-section]');
@@ -194,6 +213,7 @@ const timeSlots = [
     document.querySelectorAll('[data-intent-required="true"]')
   );
   let lastActiveElement;
+  let currentContactLabel = defaultContactLabel;
 
   const closeContactDrawer = () => {
     contactOverlay?.classList.remove('is-open');
@@ -201,6 +221,22 @@ const timeSlots = [
     document.body.classList.remove('no-scroll');
     if (lastActiveElement instanceof HTMLElement) {
       lastActiveElement.focus();
+    }
+  };
+
+  const updateContactLabel = (label) => {
+    currentContactLabel = label?.trim() || defaultContactLabel;
+    if (contactTitle) {
+      contactTitle.textContent = `${currentContactLabel} 依頼フォーム`;
+    }
+    if (contactCallLink) {
+      contactCallLink.textContent = `${currentContactLabel}に電話する`;
+    }
+    if (contactSubmit) {
+      contactSubmit.textContent = `${currentContactLabel}に送る`;
+    }
+    if (contactLabelField) {
+      contactLabelField.value = currentContactLabel;
     }
   };
 
@@ -227,9 +263,19 @@ const timeSlots = [
     });
   };
 
+  const updateRequestRequirement = () => {
+    const anyChecked = requestInputs.some((input) => input.checked);
+    requestInputs.forEach((input) => {
+      if (input.dataset.requireGroup === 'true') {
+        input.required = !anyChecked;
+      }
+    });
+  };
+
   contactTriggers.forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
+      updateContactLabel(trigger.dataset.contactLabel);
       openContactDrawer();
     });
   });
@@ -251,4 +297,11 @@ const timeSlots = [
   });
 
   intentSelect?.addEventListener('change', updateScheduleVisibility);
+
+  requestInputs.forEach((input) => {
+    input.addEventListener('change', updateRequestRequirement);
+  });
+
+  updateContactLabel(defaultContactLabel);
+  updateRequestRequirement();
 </script>
