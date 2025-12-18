@@ -10,6 +10,7 @@ import type {
   ServiceListItem,
   ServiceSection,
 } from './serviceTypes';
+import { airconNotes, regularNotes } from '../content/services/notes';
 
 export type { RegularPlan, ServiceListItem, ServiceSection } from './serviceTypes';
 
@@ -30,7 +31,7 @@ export const serviceSections: ServiceSection[] = [
     id: 'aircon',
     label: 'エアコン',
     type: 'list',
-    notes: ["製造から９年以上経過しているエアコンは出来ない場合があります。"],
+    notes: airconNotes,
     items: airconItems,
   },
   {
@@ -50,7 +51,7 @@ export const serviceSections: ServiceSection[] = [
     threeMonthlyHeading: '3ヶ月',
     group: 'special',
     wide: false,
-    notes: ["初回は別途料金となります。詳しくはお見積り時にお尋ねください。"],
+    notes: regularNotes,
     rows: regularRows,
   },
 ];
