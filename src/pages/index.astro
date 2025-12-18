@@ -1,20 +1,23 @@
 ---
+// Components
 import Layout from '../layouts/Layout.astro';
-import Seasonal from '../content/seasonal.md';
-import { spotServices } from '../content/spotServices';
-import { regularPlans } from '../content/regularPlans';
-import { options } from '../content/options';
-import { bundleDiscounts } from '../content/bundleDiscounts';
-import { notes } from '../content/notes';
+import SeasonalContent from '../components/SeasonalContent.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+
+// Content
+import { serviceSections } from '../content/serviceSections';
+import { notes, priceDate } from '../content/notes';
+import { company } from '../content/company';
+
+// Styles
 import '../styles/index.css';
 
-const company = {
-  name: 'ダミー株式会社',
-  representative: '山田 太郎',
-  address: '東京都千代田区丸の内1-1-1',
-  phone: '03-1234-5678',
-  email: 'info@example.com',
-};
+const standardSections = serviceSections.filter(
+  (section) => section.group !== 'special'
+);
+const specialSections = serviceSections.filter(
+  (section) => section.group === 'special'
+);
 ---
 
 <Layout>
@@ -33,84 +36,55 @@ const company = {
           <span class="color-primary">SHINRAI</span> CLEAN SERVICE
         </h1>
         <h2 class="hero__title">
-          カビの天敵<br />
-          汚れの刺客
+          汚れ<span>の</span>天敵<br />
+          カビ<span>の</span>刺客
         </h2>
       </div>
-      <p class="hero__lead -vt">
-        住まいの空気を変える。<br />
-        見えないところまで、汚れの特性に合わせたプロのクリーニング。
-      </p>
+      <div class="hero__lead -vt">
+        <p>
+          見えるところはもちろん、<br />
+          見えないところも<br />
+          根本からきれいにする。
+        </p>
+        <p>
+          汚れの特性を見極めた<br />
+          洗剤・溶剤・掃除用具。
+        </p>
+        <p>
+          住まいの空気を変える、<br />
+          プロのクリーニング。
+        </p>
+      </div>
     </header>
 
     <section class="section" id="services">
       <div class="section__header">
         <p class="eyebrow">Service & Pricing</p>
         <h2>サービス & 料金表</h2>
+        <p class="service-timestamp">{priceDate}現在</p>
       </div>
 
-      <div class="grid grid--three">
-        <div class="panel">
-          <p class="panel__title">スポットメニュー</p>
-          <dl class="list">
-            {
-              spotServices.map((item) => (
-                <div class="list__row" role="listitem">
-                  <dt>{item.name}</dt>
-                  <dd>{item.price}</dd>
-                </div>
-              ))
-            }
-          </dl>
-        </div>
-
-        <div class="panel">
-          <p class="panel__title">定期サービス</p>
-          <div class="table">
-            <div class="table__head">
-              <span>セット内容</span>
-              <span>1ヶ月定期</span>
-              <span>2ヶ月定期</span>
-            </div>
-            {
-              regularPlans.map((plan) => (
-                <div class="table__row">
-                  <span>{plan.set}</span>
-                  <span>{plan.monthly}</span>
-                  <span>{plan.bimonthly}</span>
-                </div>
-              ))
-            }
-          </div>
-        </div>
-
-        <div class="panel">
-          <p class="panel__title">オプション</p>
-          <dl class="list">
-            {
-              options.map((option) => (
-                <div class="list__row" role="listitem">
-                  <dt>{option.name}</dt>
-                  <dd>{option.price}</dd>
-                </div>
-              ))
-            }
-          </dl>
-        </div>
+      <div class="service-tabs" id="serviceTabs">
+        {
+          standardSections.map((section) => (
+            <button class="service-tab" type="button" data-target={section.id}>
+              {section.label}
+            </button>
+          ))
+        }
       </div>
 
-      <div class="panel panel--muted">
-        <p class="panel__title">セット割</p>
-        <ul class="bullets">
-          {bundleDiscounts.map((bundle) => <li>{bundle}</li>)}
-        </ul>
-        <p class="small">※ 一週間以内再クリーニング無料（条件あり）</p>
+      <div class="service-slider" id="serviceSlider">
+        {standardSections.map((section) => <ServiceCard section={section} />)}
       </div>
 
-      <div class="notes">
-        {notes.map((note) => <p>※ {note}</p>)}
-        <p class="timestamp">2025年3月1日現在</p>
+      <div class="service-special">
+        {specialSections.map((section) => <ServiceCard section={section} />)}
       </div>
+
+      <ul class="notes">
+        {notes.map((note) => <li>{note}</li>)}
+      </ul>
     </section>
 
     <section class="section" id="seasonal">
@@ -118,9 +92,7 @@ const company = {
         <p class="eyebrow">Seasonal Recommend</p>
         <h2>季節のおすすめ</h2>
       </div>
-      <article class="panel panel--muted markdown">
-        <Seasonal />
-      </article>
+      <SeasonalContent />
     </section>
 
     <section class="section" id="company">
@@ -134,7 +106,7 @@ const company = {
           <dd>{company.name}</dd>
         </div>
         <div class="company__row">
-          <dt>代表者</dt>
+          <dt>代表</dt>
           <dd>{company.representative}</dd>
         </div>
         <div class="company__row">
@@ -149,7 +121,89 @@ const company = {
           <dt>メール</dt>
           <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
         </div>
+        <div class="company__row company__row--icon">
+          <a
+            class="company__link"
+            href={company.instagram}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="icon">
+              <path
+                d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm11.25 1.5a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z"
+              ></path>
+            </svg>
+          </a>
+        </div>
       </dl>
     </section>
+    <footer>
+      <ul class="footer-links">
+        <li>
+          <a href={`mailto:${company.email}`}
+            >汚れ<span>の</span>天敵<span>を</span>呼ぶ</a
+          >
+        </li>
+        <li>
+          <a href={`mailto:${company.email}`}
+            >カビ<span>の</span>刺客<span>を</span>呼ぶ</a
+          >
+        </li>
+      </ul>
+    </footer>
   </div>
 </Layout>
+
+<script>
+  const slider = document.getElementById('serviceSlider');
+  const tabs = Array.from(document.querySelectorAll('[data-target]'));
+  const cards = Array.from(slider?.querySelectorAll('.service-card') ?? []);
+
+  const setActive = (id) => {
+    tabs.forEach((tab) => {
+      tab.classList.toggle('is-active', tab.dataset.target === id);
+    });
+  };
+
+  const scrollToCard = (targetId) => {
+    const target = cards.find((card) => card.id === targetId);
+    target?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.target;
+      if (!targetId) return;
+      scrollToCard(targetId);
+      setActive(targetId);
+    });
+  });
+
+  const updateActiveFromScroll = () => {
+    if (!slider) return;
+    const sliderRect = slider.getBoundingClientRect();
+    let closestId;
+    let smallestOffset = Number.POSITIVE_INFINITY;
+
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      const offset = Math.abs(rect.left - sliderRect.left);
+      if (offset < smallestOffset) {
+        smallestOffset = offset;
+        closestId = card.id;
+      }
+    });
+
+    setActive(closestId);
+  };
+
+  slider?.addEventListener('scroll', () => {
+    requestAnimationFrame(updateActiveFromScroll);
+  });
+
+  updateActiveFromScroll();
+</script>

@@ -1,0 +1,13 @@
+---
+export interface Props {
+  months: string;
+  season: string;
+}
+
+const { months, season } = Astro.props;
+---
+
+<div class="month-title">
+  <span class="month-title__months english-serif">{months}</span>
+  <span class="month-title__season">{season}</span>
+</div>

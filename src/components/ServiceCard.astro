@@ -1,0 +1,62 @@
+---
+import type { ServiceSection } from '../content/serviceSections';
+
+const {
+  section,
+  className = '',
+}: { section: ServiceSection; className?: string } = Astro.props;
+---
+
+<div
+  class={`panel service-card ${section.wide ? 'service-card--wide' : ''} ${className}`.trim()}
+  id={section.id}
+>
+  <p class="panel__title">{section.label}</p>
+
+  {
+    section.type === 'list' && (
+      <dl class="list">
+        {section.items.map((item) => (
+          <div class="list__row" role="listitem">
+            <dt>{item.name}</dt>
+            <dd>{item.price}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  {
+    section.type === 'table' && (
+      <div class="table">
+        <div class="table__head">
+          <span class="name">セット内容</span>
+          <span>{section.monthlyHeading}</span>
+          <span>{section.bimonthlyHeading}</span>
+          <span>{section.threeMonthlyHeading}</span>
+        </div>
+        {section.rows.map((plan) => (
+          <div class="table__row">
+            <span
+              class="name"
+              set:html={plan.set.replaceAll('＋', '<br />+ ')}
+            />
+            <span>{plan.monthly}</span>
+            <span>{plan.bimonthly}</span>
+            <span>{plan.threeMonthly}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    section.notes && (
+      <ul class="notes">
+        {section.notes.map((note) => (
+          <li>{note}</li>
+        ))}
+      </ul>
+    )
+  }
+</div>
