@@ -46,13 +46,6 @@ const timeSlots = [
         <h3 class="contact-drawer__title" id="contactDrawerTitle">
           お見積り・ご依頼フォーム
         </h3>
-        <a
-          class="contact-drawer__call"
-          id="contactDrawerCall"
-          href={`tel:${company.phone}`}
-        >
-          汚れの天敵に電話する
-        </a>
       </div>
       <button
         type="button"
@@ -63,6 +56,18 @@ const timeSlots = [
         ×
       </button>
     </div>
+    <p class="contact-drawer__call-container">
+      <span class="contact-drawer__call-label"
+        >お急ぎの場合はお電話でご連絡ください</span
+      >
+      <a
+        class="contact-drawer__call"
+        id="contactDrawerCall"
+        href={`tel:${company.phone}`}
+      >
+        汚れの天敵に電話する
+      </a>
+    </p>
 
     <form
       class="contact-form"
@@ -72,7 +77,12 @@ const timeSlots = [
       data-netlify-honeypot="bot-field"
     >
       <input type="hidden" name="form-name" value="contact" />
-      <input type="hidden" name="お問い合わせ先" id="contactLabelField" value="" />
+      <input
+        type="hidden"
+        name="お問い合わせ先"
+        id="contactLabelField"
+        value=""
+      />
       <p class="visually-hidden">
         <label>
           送信しないでください
@@ -83,80 +93,86 @@ const timeSlots = [
       <label class="form-field">
         <span class="form-label">内容</span>
         <select name="内容" id="contactIntent" required>
-          {intentOptions.map((option) => (
-            <option value={option}>{option}</option>
-          ))}
+          {
+            intentOptions.map((option) => (
+              <option value={option}>{option}</option>
+            ))
+          }
         </select>
       </label>
 
       <fieldset class="form-field">
         <legend class="form-label">ご依頼（複数選択可）</legend>
         <div class="request-options" role="group" aria-label="ご依頼">
-          {requestOptions.map((option, index) => {
-            const optionId = `request-${index}`;
-            return (
-              <label class="request-option" for={optionId}>
-                <input
-                  type="checkbox"
-                  id={optionId}
-                  name="ご依頼"
-                  value={option}
-                  data-require-group={index === 0}
-                />
-                <span>{option}</span>
-              </label>
-            );
-          })}
+          {
+            requestOptions.map((option, index) => {
+              const optionId = `request-${index}`;
+              return (
+                <label class="request-option" for={optionId}>
+                  <input
+                    type="checkbox"
+                    id={optionId}
+                    name="ご依頼"
+                    value={option}
+                    data-require-group={index === 0}
+                  />
+                  <span>{option}</span>
+                </label>
+              );
+            })
+          }
         </div>
       </fieldset>
 
       <fieldset class="form-field datetime-wrapper" data-intent-section>
         <legend class="form-label">ご希望の日時</legend>
         <div class="datetime-preferences">
-          {[1, 2, 3].map((index) => (
-            <div class="datetime-preference">
-              <div class="datetime-preference__title">
-                <span>第{index}希望</span>
-                {index === 1 ? (
-                  <span class="required-badge">必須</span>
-                ) : (
-                  <span class="optional">任意</span>
-                )}
-              </div>
-              <div class="datetime-preference__fields">
-                <label class="form-subfield">
-                  <span>日付</span>
-                  <input
-                    type="date"
-                    name={`希望日_${index}`}
-                    data-intent-required={index === 1}
-                  />
-                </label>
-                <label class="form-subfield">
-                  <span>時間</span>
-                  <div class="time-range">
-                    <select
-                      name={`開始時間_${index}`}
+          {
+            [1, 2, 3].map((index) => (
+              <div class="datetime-preference">
+                <div class="datetime-preference__title">
+                  <span>第{index}希望</span>
+                  {index === 1 ? (
+                    <span class="required-badge">必須</span>
+                  ) : (
+                    <span class="optional">任意</span>
+                  )}
+                </div>
+                <div class="datetime-preference__fields">
+                  <label class="form-subfield">
+                    <span>日付</span>
+                    <input
+                      type="date"
+                      name={`希望日_${index}`}
                       data-intent-required={index === 1}
-                    >
-                      {timeSlots.map((slot) => (
-                        <option value={slot}>{slot}</option>
-                      ))}
-                    </select>
-                    <span class="time-separator">〜</span>
-                    <select
-                      name={`終了時間_${index}`}
-                      data-intent-required={index === 1}
-                    >
-                      {timeSlots.map((slot) => (
-                        <option value={slot}>{slot}</option>
-                      ))}
-                    </select>
-                  </div>
-                </label>
+                    />
+                  </label>
+                  <label class="form-subfield">
+                    <span>時間</span>
+                    <div class="time-range">
+                      <select
+                        name={`開始時間_${index}`}
+                        data-intent-required={index === 1}
+                      >
+                        {timeSlots.map((slot) => (
+                          <option value={slot}>{slot}</option>
+                        ))}
+                      </select>
+                      <span class="time-separator">〜</span>
+                      <select
+                        name={`終了時間_${index}`}
+                        data-intent-required={index === 1}
+                      >
+                        {timeSlots.map((slot) => (
+                          <option value={slot}>{slot}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </label>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          }
         </div>
       </fieldset>
 
@@ -167,12 +183,21 @@ const timeSlots = [
 
       <label class="form-field">
         <span class="form-label">電話番号</span>
-        <input type="tel" name="電話番号" placeholder="090-1234-5678" required />
+        <input
+          type="tel"
+          name="電話番号"
+          placeholder="090-1234-5678"
+          required
+        />
       </label>
 
       <label class="form-field">
         <span class="form-label">メールアドレス</span>
-        <input type="email" name="メールアドレス" placeholder="example@example.com" />
+        <input
+          type="email"
+          name="メールアドレス"
+          placeholder="example@example.com"
+        />
       </label>
 
       <label class="form-field">
@@ -180,8 +205,7 @@ const timeSlots = [
         <textarea
           name="コメント"
           rows="4"
-          placeholder="ご要望やご相談内容をご記入ください"
-        ></textarea>
+          placeholder="ご要望やご相談内容をご記入ください"></textarea>
       </label>
 
       <button type="submit" class="contact-submit">送信する</button>
@@ -191,8 +215,8 @@ const timeSlots = [
 
 <script>
   const contactLabelMap = {
-    '汚れの天敵': '天敵',
-    'カビの刺客': '刺客',
+    汚れの天敵: '天敵',
+    カビの刺客: '刺客',
   };
   const defaultContactLabel = contactLabelMap['汚れの天敵'];
   const contactOverlay = document.getElementById('contactOverlay');
@@ -255,7 +279,10 @@ const timeSlots = [
     const shouldShow = intentSelect?.value === '依頼したい';
     scheduleSection?.classList.toggle('is-hidden', !shouldShow);
     intentRequiredFields.forEach((field) => {
-      if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) {
+      if (
+        field instanceof HTMLInputElement ||
+        field instanceof HTMLSelectElement
+      ) {
         if (shouldShow && field.dataset.intentRequired === 'true') {
           field.required = true;
         } else {

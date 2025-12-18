@@ -371,6 +371,19 @@ h2 {
   text-align: right;
 }
 
+.service-other {
+  margin-top: 2em;
+  padding: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
 .markdown :global(h3) {
   margin-top: 0;
 }
@@ -478,10 +491,27 @@ h2 {
 
 .contact-drawer__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.contact-drawer__call-container {
+  margin: 1em 0;
+  padding: 0.5em;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  width: calc(100% - 1em);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-drawer__call-label {
+  font-size: 11px;
+  color: var(--color-subtle);
 }
 
 .contact-drawer__call {
@@ -489,7 +519,8 @@ h2 {
   align-items: center;
   gap: 8px;
   margin-top: 8px;
-  padding: 8px 14px;
+  padding: 8px 2em;
+  background-color: #fff;
   border: 1px solid var(--color-primary);
   border-radius: 999px;
   color: var(--color-primary);
@@ -536,6 +567,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  border-radius: 8px;
 }
 
 .form-label {
