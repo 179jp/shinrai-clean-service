@@ -83,42 +83,39 @@ body.no-scroll {
   padding: 8em 4em;
 }
 
+/* SERVICES */
 #services {
   background: var(--bkg-white2);
 }
 
 .service-tabs {
   display: none;
-  gap: 10px;
-  background: var(--bkg-white1);
-  padding: 8px;
+  gap: 1em;
+  padding: 0.5em 0;
   border-radius: 999px;
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
   margin-bottom: 18px;
 }
 
 .service-tab {
   border: none;
-  background: transparent;
+  background: var(--bkg-white3);
   padding: 10px 16px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .service-tab.is-active {
-  background: var(--color-surface);
-  color: var(--color-primary);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  background: var(--color-primary);
+  color: var(--bkg-white1);
 }
 
 .service-slider {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
   margin: 0;
 }
@@ -142,6 +139,26 @@ body.no-scroll {
   margin-bottom: 2em;
 }
 
+.service-timestamp {
+  font-size: 12px;
+  color: var(--color-subtle);
+  margin-top: 12px;
+  text-align: right;
+}
+
+.service-other {
+  margin-top: 2em;
+  padding: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
 @media (max-width: 768px) {
   .service-tabs {
     display: inline-flex;
@@ -150,10 +167,10 @@ body.no-scroll {
   .service-slider {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(240px, 320px);
+    grid-auto-columns: minmax(280px, 340px);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 10px 4px 4px;
+    padding: 0.5em;
     margin: 0 -6px;
   }
 
@@ -361,26 +378,6 @@ h2 {
       font-size: 10px;
       padding-right: 0.25em;
     }
-  }
-}
-
-.service-timestamp {
-  font-size: 12px;
-  color: var(--color-subtle);
-  margin-top: 12px;
-  text-align: right;
-}
-
-.service-other {
-  margin-top: 2em;
-  padding: 1em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  p {
-    font-size: 1.2rem;
-    font-weight: 600;
-    text-align: center;
   }
 }
 
@@ -738,47 +735,6 @@ h2 {
   display: none;
 }
 
-@media (max-width: 960px) {
-  .hero {
-    min-height: 70vh;
-    padding: 72px 32px 56px;
-  }
-
-  .company__row {
-    grid-template-columns: 1fr;
-  }
-
-  .table__head,
-  .table__row {
-    grid-template-columns: 1fr 0.7fr 0.7fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .page {
-    padding: 32px 18px 72px;
-  }
-
-  .hero {
-    min-height: 70vh;
-    padding: 48px 18px 40px;
-  }
-
-  .grid--three {
-    grid-template-columns: 1fr;
-  }
-
-  .table__head,
-  .table__row {
-    grid-template-columns: 1fr;
-  }
-
-  .table__head span:nth-child(n + 2),
-  .table__row span:nth-child(n + 2) {
-    color: var(--color-text);
-  }
-}
-
 /* FOOTER */
 .footer-links {
   display: flex;
@@ -823,5 +779,83 @@ h2 {
     opacity: 1;
     color: var(--color-primary);
     transition: all 0.2s ease-out;
+  }
+}
+
+@media (max-width: 960px) {
+  .hero {
+    min-height: 80vh;
+    padding: 72px 32px 56px;
+  }
+
+  .company__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 48px 18px 40px;
+  }
+  .hero__lead {
+    bottom: 8em;
+    right: 0em;
+    font-size: 15px;
+    color: var(--color-subtle);
+  }
+
+  .section {
+    padding: 8em 1em;
+  }
+
+  .service-timestamp {
+    text-align: left;
+  }
+
+  .grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .table {
+    width: 100%;
+    overflow-x: auto;
+    .table__head,
+    .table__row {
+      width: 180%;
+    }
+  }
+
+  .table__head span:nth-child(n + 2),
+  .table__row span:nth-child(n + 2) {
+    color: var(--color-text);
+  }
+
+  .seasonal-grid {
+    padding-bottom: 2em;
+  }
+  .month-title {
+    right: 1em;
+    bottom: 2em;
+    align-items: flex-end;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 4em;
+    background: var(--bkg-white1);
+    padding: 0 0 8em;
+  }
+  .footer-links li {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    justify-content: center;
+    &::before {
+      content: '↓';
+      font-size: 2em;
+      color: var(--color-subtle);
+    }
   }
 }
