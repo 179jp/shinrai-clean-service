@@ -425,10 +425,15 @@ h2 {
   font-weight: 500;
 }
 
+.company__row--icon {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .company__row--icon .icon {
-  width: 32px;
-  height: 32px;
-  fill: currentColor;
+  width: 48px;
+  height: 48px;
+  fill: var(--color-subtle);
   margin-top: 1em;
 }
 
