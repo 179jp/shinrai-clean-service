@@ -3,6 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import SeasonalContent from '../components/SeasonalContent.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import ContactDrawer from '../components/ContactDrawer.astro';
 
 // Content
 import { serviceSections } from '../content/serviceSections';
@@ -18,33 +19,6 @@ const standardSections = serviceSections.filter(
 const specialSections = serviceSections.filter(
   (section) => section.group === 'special'
 );
-
-const requestOptions = Array.from(
-  new Set(
-    serviceSections.flatMap((section) => {
-      if ('items' in section) {
-        return section.items.map((item) => `${section.label} - ${item.name}`);
-      }
-      if ('rows' in section) {
-        return section.rows.map((row) => `${section.label} - ${row.set}`);
-      }
-      return [];
-    })
-  )
-);
-
-const timeSlots = [
-  '09:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-];
 ---
 
 <Layout>
@@ -84,131 +58,7 @@ const timeSlots = [
       </div>
     </header>
 
-    <div class="contact-overlay" id="contactOverlay" aria-hidden="true">
-      <div
-        class="contact-drawer"
-        id="contactDrawerPanel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="お問い合わせフォーム"
-        tabindex="-1"
-      >
-        <div class="contact-drawer__header">
-          <div>
-            <p class="eyebrow">Contact</p>
-            <h3 class="contact-drawer__title">お見積り・ご依頼フォーム</h3>
-          </div>
-          <button
-            type="button"
-            class="contact-drawer__close"
-            id="contactDrawerClose"
-            aria-label="フォームを閉じる"
-          >
-            ×
-          </button>
-        </div>
-
-        <form
-          class="contact-form"
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-        >
-          <input type="hidden" name="form-name" value="contact" />
-          <p class="visually-hidden">
-            <label>
-              送信しないでください
-              <input name="bot-field" />
-            </label>
-          </p>
-
-          <label class="form-field">
-            <span class="form-label">ご依頼（複数選択可）</span>
-            <select name="ご依頼" id="request" multiple required>
-              {requestOptions.map((option) => <option>{option}</option>)}
-            </select>
-            <small class="form-help">※ ⌘/Ctrl キーで複数選択できます</small>
-          </label>
-
-          <fieldset class="form-field">
-            <legend class="form-label">ご希望の日時</legend>
-            <div class="datetime-preferences">
-              {[1, 2, 3].map((index) => (
-                <div class="datetime-preference">
-                  <div class="datetime-preference__title">
-                    <span>第{index}希望</span>
-                    {index === 1 ? (
-                      <span class="required-badge">必須</span>
-                    ) : (
-                      <span class="optional">任意</span>
-                    )}
-                  </div>
-                  <div class="datetime-preference__fields">
-                    <label class="form-subfield">
-                      <span>日付</span>
-                      <input
-                        type="date"
-                        name={`希望日_${index}`}
-                        required={index === 1}
-                      />
-                    </label>
-                    <label class="form-subfield">
-                      <span>時間</span>
-                      <div class="time-range">
-                        <select
-                          name={`開始時間_${index}`}
-                          required={index === 1}
-                        >
-                          {timeSlots.map((slot) => (
-                            <option value={slot}>{slot}</option>
-                          ))}
-                        </select>
-                        <span class="time-separator">〜</span>
-                        <select
-                          name={`終了時間_${index}`}
-                          required={index === 1}
-                        >
-                          {timeSlots.map((slot) => (
-                            <option value={slot}>{slot}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </fieldset>
-
-          <label class="form-field">
-            <span class="form-label">お名前</span>
-            <input type="text" name="お名前" placeholder="山田 太郎" required />
-          </label>
-
-          <label class="form-field">
-            <span class="form-label">電話番号</span>
-            <input type="tel" name="電話番号" placeholder="090-1234-5678" required />
-          </label>
-
-          <label class="form-field">
-            <span class="form-label">TEL</span>
-            <input type="tel" name="TEL" placeholder="固定電話など" />
-          </label>
-
-          <label class="form-field">
-            <span class="form-label">コメント</span>
-            <textarea
-              name="コメント"
-              rows="4"
-              placeholder="ご要望やご相談内容をご記入ください"
-            ></textarea>
-          </label>
-
-          <button type="submit" class="contact-submit">送信する</button>
-        </form>
-      </div>
-    </div>
+    <ContactDrawer />
 
     <section class="section" id="services">
       <div class="section__header">
@@ -359,52 +209,4 @@ const timeSlots = [
   });
 
   updateActiveFromScroll();
-
-  const contactOverlay = document.getElementById('contactOverlay');
-  const contactDrawer = document.getElementById('contactDrawerPanel');
-  const contactCloseButton = document.getElementById('contactDrawerClose');
-  const contactTriggers = Array.from(
-    document.querySelectorAll('[data-contact-trigger]')
-  );
-  let lastActiveElement;
-
-  const closeContactDrawer = () => {
-    contactOverlay?.classList.remove('is-open');
-    contactOverlay?.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('no-scroll');
-    if (lastActiveElement instanceof HTMLElement) {
-      lastActiveElement.focus();
-    }
-  };
-
-  const openContactDrawer = () => {
-    lastActiveElement = document.activeElement;
-    contactOverlay?.classList.add('is-open');
-    contactOverlay?.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('no-scroll');
-    contactDrawer?.focus();
-  };
-
-  contactTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', (event) => {
-      event.preventDefault();
-      openContactDrawer();
-    });
-  });
-
-  contactCloseButton?.addEventListener('click', () => {
-    closeContactDrawer();
-  });
-
-  contactOverlay?.addEventListener('click', (event) => {
-    if (event.target === contactOverlay) {
-      closeContactDrawer();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeContactDrawer();
-    }
-  });
 </script>
