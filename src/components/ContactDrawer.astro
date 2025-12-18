@@ -2,21 +2,18 @@
 import { serviceSections } from '../content/serviceSections';
 import { company } from '../content/company';
 
-const requestOptions = Array.from(
-  new Set(
-    serviceSections.flatMap((section) => {
-      if ('items' in section) {
-        return section.items.map((item) => `${section.label} - ${item.name}`);
-      }
-      if ('rows' in section) {
-        return section.rows.map((row) => `${section.label} - ${row.set}`);
-      }
-      return [];
-    })
-  )
-);
+const rawOptions = serviceSections.flatMap((section) => {
+  if (section.group === 'special') return [];
+  if ('items' in section) {
+    if (section.id === 'aircon') return ['エアコン'];
+    return section.items.map((item) => item.name.trim());
+  }
+  return [];
+});
 
-requestOptions.push('その他');
+const requestOptions = Array.from(new Set(rawOptions.filter(Boolean)));
+
+requestOptions.push('定期で依頼したい', 'その他');
 
 const intentOptions = ['依頼したい', '見積りしたい', '相談したい'];
 
@@ -193,7 +190,11 @@ const timeSlots = [
 </div>
 
 <script>
-  const defaultContactLabel = '汚れの天敵';
+  const contactLabelMap = {
+    '汚れの天敵': '天敵',
+    'カビの刺客': '刺客',
+  };
+  const defaultContactLabel = contactLabelMap['汚れの天敵'];
   const contactOverlay = document.getElementById('contactOverlay');
   const contactDrawer = document.getElementById('contactDrawerPanel');
   const contactCloseButton = document.getElementById('contactDrawerClose');
@@ -225,7 +226,8 @@ const timeSlots = [
   };
 
   const updateContactLabel = (label) => {
-    currentContactLabel = label?.trim() || defaultContactLabel;
+    const resolvedLabel = contactLabelMap[label ?? ''] ?? label?.trim();
+    currentContactLabel = resolvedLabel || defaultContactLabel;
     if (contactTitle) {
       contactTitle.textContent = `${currentContactLabel} 依頼フォーム`;
     }
@@ -233,7 +235,7 @@ const timeSlots = [
       contactCallLink.textContent = `${currentContactLabel}に電話する`;
     }
     if (contactSubmit) {
-      contactSubmit.textContent = `${currentContactLabel}に送る`;
+      contactSubmit.textContent = `${currentContactLabel}へ送る`;
     }
     if (contactLabelField) {
       contactLabelField.value = currentContactLabel;
