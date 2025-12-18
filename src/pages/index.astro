@@ -3,6 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import SeasonalContent from '../components/SeasonalContent.astro';
 import ServiceCard from '../components/ServiceCard.astro';
+import ContactDrawer from '../components/ContactDrawer.astro';
 
 // Content
 import { serviceSections } from '../content/serviceSections';
@@ -57,6 +58,8 @@ const specialSections = serviceSections.filter(
       </div>
     </header>
 
+    <ContactDrawer />
+
     <section class="section" id="services">
       <div class="section__header">
         <p class="eyebrow">Service & Pricing</p>
@@ -85,6 +88,15 @@ const specialSections = serviceSections.filter(
       <ul class="notes">
         {notes.map((note) => <li>{note}</li>)}
       </ul>
+
+      <div class="service-other">
+        <p>
+          窓ガラス、ワックス掛けなど、上記にないサービスも承っております。<br />
+          詳しくは<a href="#" data-contact-trigger data-contact-label="仕事人"
+            >お問い合わせ</a
+          >ください。
+        </p>
+      </div>
     </section>
 
     <section class="section" id="seasonal">
@@ -103,7 +115,10 @@ const specialSections = serviceSections.filter(
       <dl class="panel company">
         <div class="company__row">
           <dt>会社名</dt>
-          <dd>{company.name}</dd>
+          <dd>
+            {company.name}<br /><span class="company__kana"
+              >{company.kana}</span>
+          </dd>
         </div>
         <div class="company__row">
           <dt>代表</dt>
@@ -140,14 +155,22 @@ const specialSections = serviceSections.filter(
     <footer>
       <ul class="footer-links">
         <li>
-          <a href={`mailto:${company.email}`}
-            >汚れ<span>の</span>天敵<span>を</span>呼ぶ</a
+          <button
+            type="button"
+            data-contact-trigger
+            data-contact-label="汚れの天敵"
           >
+            汚れ<span>の</span>天敵<span>を</span>呼ぶ
+          </button>
         </li>
         <li>
-          <a href={`mailto:${company.email}`}
-            >カビ<span>の</span>刺客<span>を</span>呼ぶ</a
+          <button
+            type="button"
+            data-contact-trigger
+            data-contact-label="カビの刺客"
           >
+            カビ<span>の</span>刺客<span>を</span>呼ぶ
+          </button>
         </li>
       </ul>
     </footer>

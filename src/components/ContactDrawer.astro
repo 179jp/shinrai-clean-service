@@ -1,0 +1,336 @@
+---
+import { serviceSections } from '../content/serviceSections';
+import { company } from '../content/company';
+
+const rawOptions = serviceSections.flatMap((section) => {
+  if (section.group === 'special') return [];
+  if ('items' in section) {
+    if (section.id === 'aircon') return ['エアコン'];
+    return section.items.map((item) => item.name.trim());
+  }
+  return [];
+});
+
+const requestOptions = Array.from(new Set(rawOptions.filter(Boolean)));
+
+requestOptions.push('定期で依頼したい', 'その他');
+
+const intentOptions = ['依頼したい', '見積りしたい', '相談したい'];
+
+const timeSlots = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+];
+---
+
+<div class="contact-overlay" id="contactOverlay" aria-hidden="true">
+  <div
+    class="contact-drawer"
+    id="contactDrawerPanel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="お問い合わせフォーム"
+    tabindex="-1"
+  >
+    <div class="contact-drawer__header">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h3 class="contact-drawer__title" id="contactDrawerTitle">
+          お見積り・ご依頼フォーム
+        </h3>
+      </div>
+      <button
+        type="button"
+        class="contact-drawer__close"
+        id="contactDrawerClose"
+        aria-label="フォームを閉じる"
+      >
+        ×
+      </button>
+    </div>
+    <p class="contact-drawer__call-container">
+      <span class="contact-drawer__call-label"
+        >お急ぎの場合はお電話でご連絡ください</span
+      >
+      <a
+        class="contact-drawer__call"
+        id="contactDrawerCall"
+        href={`tel:${company.phone}`}
+      >
+        汚れの天敵に電話する
+      </a>
+    </p>
+
+    <form
+      class="contact-form"
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input
+        type="hidden"
+        name="お問い合わせ先"
+        id="contactLabelField"
+        value=""
+      />
+      <p class="visually-hidden">
+        <label>
+          送信しないでください
+          <input name="bot-field" />
+        </label>
+      </p>
+
+      <label class="form-field">
+        <span class="form-label">内容</span>
+        <select name="内容" id="contactIntent" required>
+          {
+            intentOptions.map((option) => (
+              <option value={option}>{option}</option>
+            ))
+          }
+        </select>
+      </label>
+
+      <fieldset class="form-field">
+        <legend class="form-label">ご依頼（複数選択可）</legend>
+        <div class="request-options" role="group" aria-label="ご依頼">
+          {
+            requestOptions.map((option, index) => {
+              const optionId = `request-${index}`;
+              return (
+                <label class="request-option" for={optionId}>
+                  <input
+                    type="checkbox"
+                    id={optionId}
+                    name="ご依頼"
+                    value={option}
+                    data-require-group={index === 0}
+                  />
+                  <span>{option}</span>
+                </label>
+              );
+            })
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="form-field datetime-wrapper" data-intent-section>
+        <legend class="form-label">ご希望の日時</legend>
+        <div class="datetime-preferences">
+          {
+            [1, 2, 3].map((index) => (
+              <div class="datetime-preference">
+                <div class="datetime-preference__title">
+                  <span>第{index}希望</span>
+                  {index === 1 ? (
+                    <span class="required-badge">必須</span>
+                  ) : (
+                    <span class="optional">任意</span>
+                  )}
+                </div>
+                <div class="datetime-preference__fields">
+                  <label class="form-subfield">
+                    <span>日付</span>
+                    <input
+                      type="date"
+                      name={`希望日_${index}`}
+                      data-intent-required={index === 1}
+                    />
+                  </label>
+                  <label class="form-subfield">
+                    <span>時間</span>
+                    <div class="time-range">
+                      <select
+                        name={`開始時間_${index}`}
+                        data-intent-required={index === 1}
+                      >
+                        {timeSlots.map((slot) => (
+                          <option value={slot}>{slot}</option>
+                        ))}
+                      </select>
+                      <span class="time-separator">〜</span>
+                      <select
+                        name={`終了時間_${index}`}
+                        data-intent-required={index === 1}
+                      >
+                        {timeSlots.map((slot) => (
+                          <option value={slot}>{slot}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <label class="form-field">
+        <span class="form-label">お名前</span>
+        <input type="text" name="お名前" placeholder="山田 太郎" required />
+      </label>
+
+      <label class="form-field">
+        <span class="form-label">電話番号</span>
+        <input
+          type="tel"
+          name="電話番号"
+          placeholder="090-1234-5678"
+          required
+        />
+      </label>
+
+      <label class="form-field">
+        <span class="form-label">メールアドレス</span>
+        <input
+          type="email"
+          name="メールアドレス"
+          placeholder="example@example.com"
+        />
+      </label>
+
+      <label class="form-field">
+        <span class="form-label">コメント</span>
+        <textarea
+          name="コメント"
+          rows="4"
+          placeholder="ご要望やご相談内容をご記入ください"></textarea>
+      </label>
+
+      <button type="submit" class="contact-submit">送信する</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const contactLabelMap = {
+    汚れの天敵: '天敵',
+    カビの刺客: '刺客',
+  };
+  const defaultContactLabel = contactLabelMap['汚れの天敵'];
+  const contactOverlay = document.getElementById('contactOverlay');
+  const contactDrawer = document.getElementById('contactDrawerPanel');
+  const contactCloseButton = document.getElementById('contactDrawerClose');
+  const contactTriggers = Array.from(
+    document.querySelectorAll('[data-contact-trigger]')
+  );
+  const contactTitle = document.getElementById('contactDrawerTitle');
+  const contactCallLink = document.getElementById('contactDrawerCall');
+  const contactSubmit = document.querySelector('.contact-submit');
+  const contactLabelField = document.getElementById('contactLabelField');
+  const requestInputs = Array.from(
+    document.querySelectorAll('input[name="ご依頼"]')
+  );
+  const intentSelect = document.getElementById('contactIntent');
+  const scheduleSection = document.querySelector('[data-intent-section]');
+  const intentRequiredFields = Array.from(
+    document.querySelectorAll('[data-intent-required="true"]')
+  );
+  let lastActiveElement;
+  let currentContactLabel = defaultContactLabel;
+
+  const closeContactDrawer = () => {
+    contactOverlay?.classList.remove('is-open');
+    contactOverlay?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('no-scroll');
+    if (lastActiveElement instanceof HTMLElement) {
+      lastActiveElement.focus();
+    }
+  };
+
+  const updateContactLabel = (label) => {
+    const resolvedLabel = contactLabelMap[label ?? ''] ?? label?.trim();
+    currentContactLabel = resolvedLabel || defaultContactLabel;
+    if (contactTitle) {
+      contactTitle.textContent = `${currentContactLabel} 依頼フォーム`;
+    }
+    if (contactCallLink) {
+      contactCallLink.textContent = `${currentContactLabel}に電話する`;
+    }
+    if (contactSubmit) {
+      contactSubmit.textContent = `${currentContactLabel}へ送る`;
+    }
+    if (contactLabelField) {
+      contactLabelField.value = currentContactLabel;
+    }
+  };
+
+  const openContactDrawer = () => {
+    lastActiveElement = document.activeElement;
+    contactOverlay?.classList.add('is-open');
+    contactOverlay?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+    contactDrawer?.focus();
+    updateScheduleVisibility();
+  };
+
+  const updateScheduleVisibility = () => {
+    const shouldShow = intentSelect?.value === '依頼したい';
+    scheduleSection?.classList.toggle('is-hidden', !shouldShow);
+    intentRequiredFields.forEach((field) => {
+      if (
+        field instanceof HTMLInputElement ||
+        field instanceof HTMLSelectElement
+      ) {
+        if (shouldShow && field.dataset.intentRequired === 'true') {
+          field.required = true;
+        } else {
+          field.required = false;
+        }
+      }
+    });
+  };
+
+  const updateRequestRequirement = () => {
+    const anyChecked = requestInputs.some((input) => input.checked);
+    requestInputs.forEach((input) => {
+      if (input.dataset.requireGroup === 'true') {
+        input.required = !anyChecked;
+      }
+    });
+  };
+
+  contactTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', (event) => {
+      event.preventDefault();
+      updateContactLabel(trigger.dataset.contactLabel);
+      openContactDrawer();
+    });
+  });
+
+  contactCloseButton?.addEventListener('click', () => {
+    closeContactDrawer();
+  });
+
+  contactOverlay?.addEventListener('click', (event) => {
+    if (event.target === contactOverlay) {
+      closeContactDrawer();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeContactDrawer();
+    }
+  });
+
+  intentSelect?.addEventListener('change', updateScheduleVisibility);
+
+  requestInputs.forEach((input) => {
+    input.addEventListener('change', updateRequestRequirement);
+  });
+
+  updateContactLabel(defaultContactLabel);
+  updateRequestRequirement();
+</script>
