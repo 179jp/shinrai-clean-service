@@ -36,19 +36,19 @@ const specialSections = serviceSections.filter(
           <span class="color-primary">SHINRAI</span> CLEAN SERVICE
         </h1>
         <h2 class="hero__title">
-          カビの天敵<br />
-          汚れの刺客
+          汚れ<span>の</span>天敵<br />
+          カビ<span>の</span>刺客
         </h2>
       </div>
       <div class="hero__lead -vt">
         <p>
           見えるところはもちろん、<br />
-          見えないところ<br />
+          見えないところも<br />
           根本からきれいにする。
         </p>
         <p>
-          汚れの特性に合わせた<br />
-          溶剤・洗剤・掃除用具。
+          汚れの特性を見極めた<br />
+          洗剤・溶剤・掃除用具。
         </p>
         <p>
           住まいの空気を変える、<br />
@@ -122,21 +122,18 @@ const specialSections = serviceSections.filter(
           <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
         </div>
         <div class="company__row company__row--icon">
-          <dt>公式SNS</dt>
-          <dd>
-            <a
-              class="company__link"
-              href={company.instagram}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24" class="icon">
-                <path
-                  d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm11.25 1.5a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z"
-                ></path>
-              </svg>
-            </a>
-          </dd>
+          <a
+            class="company__link"
+            href={company.instagram}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="icon">
+              <path
+                d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm11.25 1.5a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z"
+              ></path>
+            </svg>
+          </a>
         </div>
       </dl>
     </section>
@@ -144,12 +141,12 @@ const specialSections = serviceSections.filter(
       <ul class="footer-links">
         <li>
           <a href={`mailto:${company.email}`}
-            >カビ<span>の</span>天敵<span>を</span>呼ぶ</a
+            >汚れ<span>の</span>天敵<span>を</span>呼ぶ</a
           >
         </li>
         <li>
           <a href={`mailto:${company.email}`}
-            >汚れ<span>の</span>刺客<span>を</span>呼ぶ</a
+            >カビ<span>の</span>刺客<span>を</span>呼ぶ</a
           >
         </li>
       </ul>

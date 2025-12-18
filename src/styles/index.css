@@ -1,5 +1,5 @@
 :root {
-  --bkg-white0: #F6F5F5;
+  --bkg-white0: #f6f5f5;
   --bkg-white1: #fafafa;
   --bkg-white2: #f8f8f3;
   --bkg-white3: #f2f4f1;
@@ -54,6 +54,9 @@ body {
   letter-spacing: 0.06em;
   margin: 14px 0 18px;
   line-height: 1.2;
+  span {
+    font-size: clamp(36px, 5vw, 60px);
+  }
 }
 
 .hero__lead {
@@ -186,12 +189,12 @@ body {
   align-items: center;
   gap: 0.25em;
   position: absolute;
-  bottom: 2em;
-  right: 2em;
+  bottom: 4em;
+  right: 4em;
 }
 
 .month-title__months {
-  font-size: 100px;
+  font-size: clamp(80px, 14vw, 140px);
   line-height: 1;
 }
 
@@ -199,7 +202,7 @@ body {
   color: var(--color-subtle);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 #company {
@@ -357,7 +360,6 @@ h2 {
   }
 }
 
-
 .service-timestamp {
   font-size: 12px;
   color: var(--color-subtle);
@@ -383,8 +385,10 @@ h2 {
 }
 
 .company {
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
+  width: 100%;
+  max-width: 640px;
 }
 
 .company__row {
@@ -410,10 +414,10 @@ h2 {
 }
 
 .company__row--icon .icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
+  width: 32px;
+  height: 32px;
   fill: currentColor;
+  margin-top: 1em;
 }
 
 .company__link {
@@ -431,7 +435,6 @@ h2 {
   letter-spacing: 0.06em;
   color: var(--color-primary);
 }
-
 
 @media (max-width: 960px) {
   .hero {
@@ -474,24 +477,42 @@ h2 {
   }
 }
 
-
 /* FOOTER */
 .footer-links {
   display: flex;
-  gap: 3em;
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
   overflow: hidden;
+  justify-content: space-between;
+}
+.footer-links li {
+  &:first-child {
+    a {
+      color: var(--color-subtle);
+    }
+  }
+  &:last-child {
+    a {
+      color: var(--color-subtle);
+      opacity: 0.8;
+    }
+  }
 }
 .footer-links li a {
   font-size: clamp(44px, 6vw, 80px);
   font-weight: 700;
   text-decoration: none;
   display: inline-block;
-  transform: skew(-0.4rad) scale(1.05, 1.25);
+  transform: skew(-0.5rad) scale(1.05, 1.5);
+  transition: all 0.85s ease-in;
   span {
     font-size: clamp(38px, 5vw, 60px);
+  }
+  &:hover {
+    opacity: 1;
+    color: var(--color-primary);
+    transition: all 0.2s ease-out;
   }
 }
