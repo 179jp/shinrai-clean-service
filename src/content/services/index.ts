@@ -1,5 +1,6 @@
-import type { RegularPlan, ServiceListItem } from '../helper/serviceSections';
+import type { RegularPlan, ServiceListItem } from '../../helper/serviceSections';
 
+// 水回りのサービス＆料金
 export const waterItems: ServiceListItem[] = [
   { name: 'キッチン', price: '¥19,000' },
   { name: 'レンジフード', price: '¥18,000' },
@@ -8,11 +9,13 @@ export const waterItems: ServiceListItem[] = [
   { name: '浴室', price: '¥18,000' },
 ];
 
+// 浴室のオプションメニュー
 export const bathOpsItems: ServiceListItem[] = [
   { name: 'エプロン内部', price: '¥3,000' },
   { name: '乾燥機付き換気扇', price: '¥8,000' },
 ];
 
+// エアコンクリーニングの料金
 export const airconItems: ServiceListItem[] = [
   { name: 'ノーマル', price: '¥11,000/台' },
   { name: '　2台目以降', price: '¥9,000/台' },
@@ -20,12 +23,14 @@ export const airconItems: ServiceListItem[] = [
   { name: '　2台目以降', price: '¥20,000/台' },
 ];
 
+// セット割のプラン
 export const bundlesItems: ServiceListItem[] = [
   { name: 'レンジフード＋浴室', price: '¥30,000' },
   { name: 'キッチン＋レンジフード', price: '¥30,000' },
   { name: 'キッチン＋浴室', price: '¥32,000' },
 ];
 
+// 定期清掃プランの料金表
 export const regularRows: RegularPlan[] = [
   {
     set: '浴室',
