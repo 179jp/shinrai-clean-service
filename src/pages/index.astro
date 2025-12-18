@@ -115,7 +115,10 @@ const specialSections = serviceSections.filter(
       <dl class="panel company">
         <div class="company__row">
           <dt>会社名</dt>
-          <dd>{company.name}</dd>
+          <dd>
+            {company.name}<br /><span class="company__kana"
+              >{company.kana}</span>
+          </dd>
         </div>
         <div class="company__row">
           <dt>代表</dt>
