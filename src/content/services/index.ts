@@ -26,12 +26,16 @@ export const airconItems: ServiceListItem[] = [
   { name: '　2台目以降', price: '¥20,000/台' },
 ];
 
+/*
+// セット割は掲載なし
+// ---
 // セット割のプラン
 export const bundlesItems: ServiceListItem[] = [
   { name: 'レンジフード＋浴室', price: '¥30,000' },
   { name: 'キッチン＋レンジフード', price: '¥30,000' },
   { name: 'キッチン＋浴室', price: '¥32,000' },
 ];
+*/
 
 // 定期清掃プランの料金表
 export const regularRows: RegularPlan[] = [

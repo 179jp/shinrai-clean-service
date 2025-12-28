@@ -1,7 +1,6 @@
 import {
   airconItems,
   bathOpsItems,
-  bundlesItems,
   regularRows,
   waterItems,
 } from '../content/services';
@@ -35,16 +34,8 @@ export const serviceSections: ServiceSection[] = [
     items: airconItems,
   },
   {
-    id: 'bundles',
-    label: 'セット割',
-    type: 'list',
-    group: 'special',
-    wide: false,
-    items: bundlesItems,
-  },
-  {
     id: 'regular',
-    label: '定期',
+    label: '定期（一例）',
     type: 'table',
     monthlyHeading: '1ヶ月',
     bimonthlyHeading: '2ヶ月',

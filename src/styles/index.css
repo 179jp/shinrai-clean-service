@@ -225,20 +225,21 @@ h2 {
 
 /* Hero Section */
 .hero {
-  min-height: calc(100vh - 160px);
+  min-height: calc(50vh - 160px);
   display: flex;
   align-items: flex-start;
-  padding: 3em 1em 2em;
+  padding: 1em 1em 2em;
   position: relative;
   background: var(--bkg-white1);
 }
 
 .logo {
   position: absolute;
-  bottom: 2em;
-  left: 2em;
+  top: 4em;
+  left: 50%;
   width: 200px;
   height: 72px;
+  transform: translateX(-50%);
 }
 
 .hero__copy {
@@ -259,15 +260,18 @@ h2 {
   margin: 0;
   color: var(--color-lede);
   max-width: 640px;
-  font-size: clamp(12px, 2vw, 16px);
+  font-size: clamp(9px, 1vw, 12px);
   line-height: 1.7;
   display: inline-block;
   text-align: justify;
   position: absolute;
-  bottom: 4em;
-  right: 2em;
-  height: 12em;
+  top: 0em;
+  right: 0em;
+  height: 14em;
   scale: 1 0.8;
+  span {
+    letter-spacing: -0.2em;
+  }
 }
 
 /* Services Section */
@@ -347,18 +351,18 @@ h2 {
   }
 }
 
-/* Seasonal Section */
-#seasonal {
-  background: var(--bkg-white3);
+/* campaign Section */
+#campaign {
+  background: var(--bkg-white1);
   position: relative;
 }
 
-.seasonal-block {
+.campaign-block {
   display: grid;
   gap: 12px;
 }
 
-.seasonal-grid {
+.campaign-grid {
   display: grid;
   gap: 12px;
 }
@@ -466,6 +470,7 @@ h2 {
   pointer-events: none;
   transition: opacity 0.3s ease;
   z-index: 10;
+  display: none;
 }
 
 .contact-overlay.is-open {

@@ -1,7 +1,7 @@
 ---
 // Components
 import Layout from '../layouts/Layout.astro';
-import SeasonalContent from '../components/SeasonalContent.astro';
+import CampaignContent from '../components/CampaignContent.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
 
@@ -25,6 +25,11 @@ const specialSections = serviceSections.filter(
 <Layout>
   <div class="page">
     <header class="hero">
+      <div class="hero__copy">
+        <h1 class="eyebrow">
+          <span class="color-primary">SHINRAI</span> CLEAN SERVICE
+        </h1>
+      </div>
       <p class="logo">
         <img
           src="/img/logo.svg"
@@ -33,33 +38,17 @@ const specialSections = serviceSections.filter(
           height="72"
         />
       </p>
-      <div class="hero__copy">
-        <h1 class="eyebrow">
-          <span class="color-primary">SHINRAI</span> CLEAN SERVICE
-        </h1>
-        <h2 class="hero__title">
-          汚れ<span>の</span>天敵<br />
-          カビ<span>の</span>刺客
-        </h2>
-      </div>
       <div class="hero__lead -vt">
         <p>
-          見えるところはもちろん、<br />
-          見えないところも<br />
-          根本からきれいにする。
-        </p>
-        <p>
-          汚れの特性を見極めた<br />
-          洗剤・溶剤・掃除用具。
-        </p>
-        <p>
-          住まいの空気を変える、<br />
-          プロのクリーニング。
+          「きれい」を保つために<br />お力になれることを。<br /><span>ーー</span
+          > シンライクリーンサービス
         </p>
       </div>
     </header>
 
-    <ContactDrawer />
+    <section class="section" id="campaign">
+      <CampaignContent />
+    </section>
 
     <section class="section" id="services">
       <div class="section__header">
@@ -100,14 +89,6 @@ const specialSections = serviceSections.filter(
       </div>
     </section>
 
-    <section class="section" id="seasonal">
-      <div class="section__header">
-        <p class="eyebrow">Seasonal Recommend</p>
-        <h2>季節のおすすめ</h2>
-      </div>
-      <SeasonalContent />
-    </section>
-
     <section class="section" id="company">
       <div class="section__header">
         <p class="eyebrow">Company</p>
@@ -117,8 +98,8 @@ const specialSections = serviceSections.filter(
         <div class="company__row">
           <dt>会社名</dt>
           <dd>
-            {company.name}<br /><span class="company__kana"
-              >{company.kana}</span>
+            {company.name}<br /><span class="company__kana">{company.kana}</span
+            >
           </dd>
         </div>
         <div class="company__row">
@@ -153,6 +134,7 @@ const specialSections = serviceSections.filter(
         </div>
       </dl>
     </section>
+    <ContactDrawer />
     <footer>
       <ul class="footer-links">
         <li>
