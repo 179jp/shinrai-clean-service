@@ -36,6 +36,14 @@
   display: none;
 }
 
+.for-sp {
+  display: none;
+}
+@media (max-width: 768px) {
+  .for-sp {
+    display: block;
+  }
+}
 /* Base Layout */
 body {
   background: var(--bkg-white3);
@@ -894,6 +902,7 @@ footer {
 @media (max-width: 640px) {
   /* Hero Adjustments */
   .hero {
+    min-height: 65vh;
     padding: 48px 18px 40px;
   }
   .hero__lead {
@@ -906,6 +915,9 @@ footer {
   /* Section Spacing */
   .section {
     padding: 8em 1em;
+  }
+  .section#company { 
+    padding-bottom: 4em;
   }
 
   /* Services Timestamp */
@@ -973,5 +985,16 @@ footer {
       font-size: 2em;
       color: var(--color-subtle);
     }
+  }
+  .footer-links__call {
+    text-align: center;
+    gap: 0.5em;
+  }
+  .footer-links__call-text {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    line-height: 1;
+    transform: skew(-0.3rad) scale(1.05, 1.5);
   }
 }
