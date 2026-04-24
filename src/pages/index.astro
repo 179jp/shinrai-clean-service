@@ -114,10 +114,6 @@ const specialSections = serviceSections.filter(
           <dt>電話</dt>
           <dd>{company.phone}</dd>
         </div>
-        <div class="company__row">
-          <dt>メール</dt>
-          <dd><a href={`mailto:${company.email}`}>{company.email}</a></dd>
-        </div>
         <div class="company__row company__row--icon">
           <a
             class="company__link"
@@ -125,10 +121,14 @@ const specialSections = serviceSections.filter(
             target="_blank"
             rel="noreferrer"
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24" class="icon">
-              <path
-                d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7Zm11.25 1.5a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z"
-              ></path>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              class="icon icon--instagram"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="17.4" cy="6.6" r="1.2"></circle>
             </svg>
           </a>
         </div>
@@ -136,26 +136,13 @@ const specialSections = serviceSections.filter(
     </section>
     <ContactDrawer />
     <footer>
-      <ul class="footer-links">
-        <li>
-          <button
-            type="button"
-            data-contact-trigger
-            data-contact-label="汚れの天敵"
+      <p class="footer-links">
+        <a class="footer-links__call" href={`tel:${company.phone}`}>
+          <span class="footer-links__call-text"
+            >お電話<span>で</span>お問い合わせ</span
           >
-            汚れ<span>の</span>天敵<span>を</span>呼ぶ
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            data-contact-trigger
-            data-contact-label="カビの刺客"
-          >
-            カビ<span>の</span>刺客<span>を</span>呼ぶ
-          </button>
-        </li>
-      </ul>
+        </a>
+      </p>
     </footer>
   </div>
 </Layout>

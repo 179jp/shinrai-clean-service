@@ -235,7 +235,7 @@ h2 {
 
 .logo {
   position: absolute;
-  top: 4em;
+  bottom: 2em;
   left: 50%;
   width: 200px;
   height: 72px;
@@ -260,7 +260,7 @@ h2 {
   margin: 0;
   color: var(--color-lede);
   max-width: 640px;
-  font-size: clamp(9px, 1vw, 12px);
+  font-size: clamp(10px, 1.5vw, 14px);
   line-height: 1.7;
   display: inline-block;
   text-align: justify;
@@ -399,6 +399,8 @@ h2 {
   padding: 0;
   width: 100%;
   max-width: 640px;
+  background-color: transparent;
+  border: none;
 }
 
 .company__row {
@@ -407,6 +409,7 @@ h2 {
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border-soft);
+  align-items: center;
 }
 
 .company__row:last-child {
@@ -431,21 +434,51 @@ h2 {
 
 .company__row--icon {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .company__row--icon .icon {
-  width: 48px;
-  height: 48px;
-  fill: var(--color-subtle);
+  width: 40px;
+  height: 40px;
   margin-top: 1em;
 }
 
 .company__link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-weight: 700;
+  border-radius: 14px;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.company__link:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 8px 12px rgba(15, 23, 42, 0.14));
+}
+
+.icon--instagram {
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-subtle);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s ease, opacity 0.2s ease;
+}
+
+.company__link:hover .icon--instagram {
+  stroke: var(--color-primary);
+}
+
+.icon--instagram circle:last-child {
+  fill: var(--color-subtle);
+  stroke: none;
+  transition: fill 0.2s ease;
+}
+
+.company__link:hover .icon--instagram circle:last-child {
+  fill: var(--color-primary);
 }
 
 .contact-link {
@@ -470,6 +503,7 @@ h2 {
   pointer-events: none;
   transition: opacity 0.3s ease;
   z-index: 10;
+  /* 一旦非表示 */
   display: none;
 }
 
@@ -722,6 +756,9 @@ h2 {
 }
 
 /* Footer */
+footer {
+  background: var(--bkg-white5);
+}
 .footer-links {
   display: flex;
   list-style: none;
@@ -729,7 +766,47 @@ h2 {
   padding: 0;
   width: 100%;
   overflow: hidden;
-  justify-content: space-between;
+  justify-content: center;
+}
+
+.footer-links a {
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  text-align: center;
+  color: var(--color-subtle);
+  
+}
+
+.footer-links__call {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.footer-links__call::before {
+  content: '↓';
+  font-size: 120%;
+}
+.footer-links__call-text {
+  transform: skew(-0.5rad) scale(1.05, 1.5);
+  span {
+    font-size: 88%;
+  }
+}
+
+.footer-links__icon {
+  width: 0.8em;
+  height: 0.8em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  translate: 0 0.1em;
+  rotate: 5deg;
 }
 
 .footer-links li {
