@@ -903,10 +903,10 @@ footer {
   /* Hero Adjustments */
   .hero {
     min-height: 65vh;
-    padding: 48px 18px 40px;
+    padding: 16px 18px 56px;
   }
   .hero__lead {
-    bottom: 8.5em;
+    top: 4em;
     right: 0em;
     font-size: 15px;
     color: var(--color-subtle);
@@ -918,6 +918,25 @@ footer {
   }
   .section#company { 
     padding-bottom: 4em;
+  }
+
+  #campaign .section__header h3 {
+    display: none;
+  }
+  #campaign .section__header {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  #campaign .campaign-grid {
+    border: none;
+    padding: 0;
+  }
+  #campaign .panel {
+    border: none;
+    padding: 0;
+  }
+  #campaign .panel h3 {
+    margin-block-start: 0;
   }
 
   /* Services Timestamp */
