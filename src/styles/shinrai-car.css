@@ -11,6 +11,10 @@
   width: 114px;
   height: 64px;
   animation: left-to-right 12s linear infinite;
+
+  @media (max-width: 768px) {
+    animation: left-to-right 7s linear infinite;
+  }
 }
 
 .shinrai-car .car {
@@ -28,6 +32,10 @@
   width: 20px;
   height: auto;
   animation: rolling 2s linear infinite;
+
+  @media (max-width: 768px) {
+    animation: rolling 1.5s linear infinite;
+  }
 }
 
 .shinrai-car .tier.front {
