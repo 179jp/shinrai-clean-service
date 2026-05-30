@@ -1,0 +1,75 @@
+.shinrai-car-wrapper {
+  position: relative;
+  width: 100%;
+  height: 72px;
+}
+
+.shinrai-car {
+  position: absolute;
+  bottom: 0;
+  left: -200px;
+  width: 114px;
+  height: 64px;
+  animation: left-to-right 12s linear infinite;
+}
+
+.shinrai-car .car {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: moving-car 1s linear infinite;
+}
+
+.shinrai-car .tier {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: auto;
+  animation: rolling 2s linear infinite;
+}
+
+.shinrai-car .tier.front {
+  right: 4px;
+}
+
+.shinrai-car .tier.back {
+  left: 4px;
+}
+
+@keyframes left-to-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(120vw + 114px));
+  }
+}
+
+@keyframes moving-car {
+  0% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: 1.5deg;
+  }
+  50% {
+    rotate: 0deg;
+  }
+  75% {
+    rotate: -1.5deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
+@keyframes rolling {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import CampaignContent from '../components/CampaignContent.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
+import ShinraiCar from '../components/ShinraiCar.astro';
 
 // Content
 import { serviceSections } from '../helper/serviceSections';
@@ -69,6 +70,10 @@ const specialSections = serviceSections.filter(
 
       <div class="service-slider" id="serviceSlider">
         {standardSections.map((section) => <ServiceCard section={section} />)}
+      </div>
+
+      <div class="sevice-shinrai-car">
+        <ShinraiCar />
       </div>
 
       <div class="service-special">
