@@ -1,3 +1,12 @@
+.service-shinrai-car {
+  width: 100%;
+  overflow: hidden;
+  @media (max-width: 768px) {
+    width: calc(100% + 4em);
+    margin-inline: -2em;
+  }
+}
+
 .shinrai-car-wrapper {
   position: relative;
   width: 100%;
@@ -16,6 +25,16 @@
     animation: left-to-right 7s linear infinite;
   }
 }
+.shinrai-car.right-left {
+  left: auto;
+  right: -200px;
+  animation: right-to-left 12s linear infinite;
+}
+@media (max-width: 768px) {
+  .shinrai-car.right-left {
+    animation: right-to-left 7s linear infinite;
+  }
+}
 
 .shinrai-car .car {
   position: absolute;
@@ -28,7 +47,7 @@
 
 .shinrai-car .tier {
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   width: 20px;
   height: auto;
   animation: rolling 2s linear infinite;
@@ -51,10 +70,18 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(120vw + 114px));
+    transform: translateX(calc(150vw + 114px));
   }
 }
 
+@keyframes right-to-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-150vw - 114px));
+  }
+}
 @keyframes moving-car {
   0% {
     rotate: 0deg;
