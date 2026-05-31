@@ -2,8 +2,8 @@
   width: 100%;
   overflow: hidden;
   @media (max-width: 768px) {
-    width: calc(100% + 4em);
-    margin-inline: -2em;
+    width: calc(100% + 2em);
+    margin-inline: -1em;
   }
 }
 
