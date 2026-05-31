@@ -63,6 +63,7 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
       const pendingTimers: ReturnType<typeof setTimeout>[] = [];
 
       // Fisher-Yates シャッフル
+      // ※ start() は全コメントのフォントサブセットロード後に呼ばれる（下部参照）
       function shuffle<T>(arr: T[]): T[] {
         const a = [...arr];
         for (let i = a.length - 1; i > 0; i--) {
@@ -107,26 +108,30 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
           pendingTimers.push(setTimeout(() => { carImg.style.animation = ''; }, resumeMs));
         }
 
-        // 吹き出し表示（フォントロード待ちでがたつきを防ぐ）
+        // 吹き出し表示
+        // テキストはサイクル開始時に opacity:0 のまま描画済みなので
+        // フォントロード・invisible リフローは表示前に完了している
         if (hideMs <= 0) return;
-        const showBubble = () => {
-          document.fonts.load('1em "DotGothic16"')
-            .then(() => { bubble.style.opacity = '1'; })
-            .catch(() => { bubble.style.opacity = '1'; });
-        };
         if (showMs <= 0) {
-          showBubble();
+          bubble.style.opacity = '1';
         } else {
-          pendingTimers.push(setTimeout(showBubble, showMs));
+          pendingTimers.push(setTimeout(() => { bubble.style.opacity = '1'; }, showMs));
         }
         pendingTimers.push(setTimeout(() => { bubble.style.opacity = '0'; }, hideMs));
       }
 
-      schedule(phaseOffsetMs);
-      // e.target が car 自身のときだけ処理（子要素のバブルアップを無視）
-      car.addEventListener('animationiteration', (e) => {
-        if (e.target === car) schedule(0);
-      });
+      function start() {
+        schedule(phaseOffsetMs);
+        // e.target が car 自身のときだけ処理（子要素のバブルアップを無視）
+        car.addEventListener('animationiteration', (e) => {
+          if (e.target === car) schedule(0);
+        });
+      }
+
+      // 全コメントに使われる文字のフォントサブセットをまとめてロードしてから開始
+      // （テキストを渡さないと unicode-range サブセットが揃わず、表示タイミングで
+      //   スワップが起きてリフローになる）
+      document.fonts.load('18px "DotGothic16"', COMMENTS.join('')).then(start, start);
     });
   </script>
 )}
