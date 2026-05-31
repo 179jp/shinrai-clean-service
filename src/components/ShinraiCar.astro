@@ -63,7 +63,6 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
       const pendingTimers: ReturnType<typeof setTimeout>[] = [];
 
       // Fisher-Yates シャッフル
-      // ※ start() は全コメントのフォントサブセットロード後に呼ばれる（下部参照）
       function shuffle<T>(arr: T[]): T[] {
         const a = [...arr];
         for (let i = a.length - 1; i > 0; i--) {
@@ -128,10 +127,25 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
         });
       }
 
-      // 全コメントに使われる文字のフォントサブセットをまとめてロードしてから開始
-      // （テキストを渡さないと unicode-range サブセットが揃わず、表示タイミングで
-      //   スワップが起きてリフローになる）
-      document.fonts.load('18px "DotGothic16"', COMMENTS.join('')).then(start, start);
+      // 全コメントの文字を実際に DOM に描画してから fonts.ready を待つ。
+      // Font Loading API (fonts.load) だけでは unicode-range サブセットの
+      // ダウンロードが取りこぼされるケースがあるため、ブラウザが実際に
+      // レンダリングで必要とする経路でサブセットを確定させる。
+      const preloadDiv = document.createElement('div');
+      preloadDiv.setAttribute('aria-hidden', 'true');
+      preloadDiv.style.cssText = [
+        'position:fixed',
+        'top:-9999px',
+        'opacity:0',
+        'pointer-events:none',
+        'font-family:"DotGothic16"',
+        'font-size:18px',
+        'writing-mode:vertical-rl',
+        'white-space:pre-wrap',
+      ].join(';');
+      preloadDiv.textContent = COMMENTS.join('\n');
+      document.body.appendChild(preloadDiv);
+      document.fonts.ready.then(start);
     });
   </script>
 )}

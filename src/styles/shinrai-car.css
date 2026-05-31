@@ -137,7 +137,7 @@
 .comment-bubble {
   position: absolute;
   bottom: 62px;
-  left: calc(50% - 0.5em);
+  left: 50%;
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -147,9 +147,15 @@
   border: 3px solid #373737;
   border-radius: 35px;
   padding: 0.5em 1.5em;
-  min-width: 5em;
-  text-align: center;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  /* 3列分の固定幅（コメント行数が変わっても幅・位置が変わらないようにする） */
+  /* width = 3列(line-height×font-size×3) + 左右padding(1.5em×2) + border(3px×2) */
+  font-size: 18px;
+  box-sizing: border-box;
+  width: calc(3 * 1.7em + 3em + 6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 吹き出しの三角（枠線部分） */
