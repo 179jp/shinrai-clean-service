@@ -411,6 +411,7 @@ h2 {
 /* Company Section */
 #company {
   background: var(--bkg-white5);
+  padding-top: 4em;
 }
 
 .company {

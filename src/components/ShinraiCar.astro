@@ -1,5 +1,6 @@
 ---
 import '../styles/shinrai-car.css';
+import { carComments } from '../content/shinraiCarComments';
 
 const { direction = 'left-right', showComments = false }: {
   direction?: string;
@@ -8,7 +9,10 @@ const { direction = 'left-right', showComments = false }: {
 const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
 ---
 
-<div class={`shinrai-car-wrapper ${showComments ? 'with-comment' : ''}`}>
+<div
+  class={`shinrai-car-wrapper ${showComments ? 'with-comment' : ''}`}
+  data-comments={showComments ? JSON.stringify(carComments) : undefined}
+>
   <div class={`shinrai-car ${direction}`}>
     <img src={`/img/${imgFolder}/car.png`} class="car" alt="シンライカー" />
     <img
@@ -23,21 +27,19 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
     />
   </div>
   {showComments && (
-    <div class="comment-bubble">
-      <img src="/img/comments/comment-1.png" class="comment-img" alt="コメント" />
+    <div class="comment-bubble" aria-hidden="true">
+      <p class="comment-text font-dot"></p>
     </div>
   )}
 </div>
 
 {showComments && (
   <script>
-    const COMMENTS_NUM = 4;
-    const COMMENTS = Array.from({ length: COMMENTS_NUM }, (_, i) => `/img/comments/comment-${i + 1}.png`);
     const isMob = window.innerWidth <= 768;
     const TOTAL_MS    = isMob ? 8000  : 14000;
     const STOP_FRAC   = isMob ? 0.32  : 0.33;
     const RESUME_FRAC = isMob ? 0.76  : 0.71;
-    const BREATH_MS   = 800;  // 停車後、吹き出しが出るまでの間
+    const BREATH_MS   = 200;  // 停車後、吹き出しが出るまでの間
     const FADE_LEAD_MS = 500; // 出発の何ms前から吹き出しを消し始めるか
 
     const wrappers = Array.from(
@@ -45,11 +47,12 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
     );
 
     wrappers.forEach((wrapper, i) => {
-      const car    = wrapper.querySelector<HTMLElement>('.shinrai-car');
-      const carImg = wrapper.querySelector<HTMLElement>('.shinrai-car .car');
-      const bubble = wrapper.querySelector<HTMLElement>('.comment-bubble');
-      const img    = wrapper.querySelector<HTMLImageElement>('.comment-img');
-      if (!car || !carImg || !bubble || !img) return;
+      const COMMENTS: string[] = JSON.parse(wrapper.dataset.comments ?? '[]');
+      const car         = wrapper.querySelector<HTMLElement>('.shinrai-car');
+      const carImg      = wrapper.querySelector<HTMLElement>('.shinrai-car .car');
+      const bubble      = wrapper.querySelector<HTMLElement>('.comment-bubble');
+      const commentText = wrapper.querySelector<HTMLElement>('.comment-text');
+      if (!car || !carImg || !bubble || !commentText || COMMENTS.length === 0) return;
 
       // インスタンス間で同時に吹き出しが出ないよう位相をずらす
       const phaseOffsetMs = (TOTAL_MS / wrappers.length) * i;
@@ -59,11 +62,33 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
 
       const pendingTimers: ReturnType<typeof setTimeout>[] = [];
 
+      // Fisher-Yates シャッフル
+      function shuffle<T>(arr: T[]): T[] {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // シャッフル済みキューと現在のインデックス
+      let queue: string[] = shuffle(COMMENTS);
+      let queueIndex = 0;
+
+      function nextComment(): string {
+        if (queueIndex >= queue.length) {
+          queue = shuffle(COMMENTS);
+          queueIndex = 0;
+        }
+        return queue[queueIndex++];
+      }
+
       function schedule(cycleOffsetMs: number) {
         for (const t of pendingTimers) clearTimeout(t);
         pendingTimers.length = 0;
 
-        img.src = COMMENTS[Math.floor(Math.random() * COMMENTS.length)];
+        commentText.textContent = nextComment();
 
         const stopMs   = TOTAL_MS * STOP_FRAC   - cycleOffsetMs;
         const resumeMs = TOTAL_MS * RESUME_FRAC - cycleOffsetMs;

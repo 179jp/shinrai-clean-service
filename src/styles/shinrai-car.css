@@ -1,6 +1,6 @@
 .service-shinrai-car {
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   @media (max-width: 768px) {
     width: calc(100% + 2em);
     margin-inline: -1em;
@@ -13,7 +13,7 @@
   height: 72px;
 }
 .shinrai-car-wrapper.with-comment {
-  height: calc(72px + 120px);
+  height: calc(72px + 160px);
 }
 
 .shinrai-car {
@@ -136,18 +136,61 @@
 
 .comment-bubble {
   position: absolute;
-  top: 10px;
-  left: calc(50% - 2.75em);
+  bottom: 62px;
+  left: calc(50% - 0.5em);
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  /* 吹き出し本体 */
+  background: #fff;
+  border: 3px solid #373737;
+  border-radius: 35px;
+  padding: 0.5em 1.5em;
+  min-width: 5em;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-.comment-bubble img {
-  width: auto;
-  height: 100px;
-  display: block;
+/* 吹き出しの三角（枠線部分） */
+.comment-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: #373737 transparent transparent transparent;
+}
+
+/* 吹き出しの三角（白抜き部分） */
+.comment-bubble::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 6px 0 6px;
+  border-color: #fff transparent transparent transparent;
+  z-index: 1;
+}
+
+.comment-text {
+  font-size: 18px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  writing-mode: vertical-rl;
+  font-feature-settings: 'vpal';
+  text-align: left;
 }
 
 /* デスクトップ: 全14s、33%で停車・71%で再発進 */
