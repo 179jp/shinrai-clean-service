@@ -1,11 +1,14 @@
 ---
 import '../styles/shinrai-car.css';
 
-const { direction = 'left-right' }: { direction?: string } = Astro.props;
+const { direction = 'left-right', showComments = false }: {
+  direction?: string;
+  showComments?: boolean;
+} = Astro.props;
 const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
 ---
 
-<div class="shinrai-car-wrapper">
+<div class={`shinrai-car-wrapper ${showComments ? 'with-comment' : ''}`}>
   <div class={`shinrai-car ${direction}`}>
     <img src={`/img/${imgFolder}/car.png`} class="car" alt="シンライカー" />
     <img
@@ -19,4 +22,81 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
       alt="シンライカー"
     />
   </div>
+  {showComments && (
+    <div class="comment-bubble">
+      <img src="/img/comments/comment-1.png" class="comment-img" alt="コメント" />
+    </div>
+  )}
 </div>
+
+{showComments && (
+  <script>
+    const COMMENTS_NUM = 4;
+    const COMMENTS = Array.from({ length: COMMENTS_NUM }, (_, i) => `/img/comments/comment-${i + 1}.png`);
+    const isMob = window.innerWidth <= 768;
+    const TOTAL_MS    = isMob ? 8000  : 14000;
+    const STOP_FRAC   = isMob ? 0.32  : 0.33;
+    const RESUME_FRAC = isMob ? 0.76  : 0.71;
+    const BREATH_MS   = 800;  // 停車後、吹き出しが出るまでの間
+    const FADE_LEAD_MS = 500; // 出発の何ms前から吹き出しを消し始めるか
+
+    const wrappers = Array.from(
+      document.querySelectorAll<HTMLElement>('.shinrai-car-wrapper.with-comment')
+    );
+
+    wrappers.forEach((wrapper, i) => {
+      const car    = wrapper.querySelector<HTMLElement>('.shinrai-car');
+      const carImg = wrapper.querySelector<HTMLElement>('.shinrai-car .car');
+      const bubble = wrapper.querySelector<HTMLElement>('.comment-bubble');
+      const img    = wrapper.querySelector<HTMLImageElement>('.comment-img');
+      if (!car || !carImg || !bubble || !img) return;
+
+      // インスタンス間で同時に吹き出しが出ないよう位相をずらす
+      const phaseOffsetMs = (TOTAL_MS / wrappers.length) * i;
+      if (phaseOffsetMs > 0) {
+        car.style.animationDelay = `${-(phaseOffsetMs / 1000)}s`;
+      }
+
+      const pendingTimers: ReturnType<typeof setTimeout>[] = [];
+
+      function schedule(cycleOffsetMs: number) {
+        for (const t of pendingTimers) clearTimeout(t);
+        pendingTimers.length = 0;
+
+        img.src = COMMENTS[Math.floor(Math.random() * COMMENTS.length)];
+
+        const stopMs   = TOTAL_MS * STOP_FRAC   - cycleOffsetMs;
+        const resumeMs = TOTAL_MS * RESUME_FRAC - cycleOffsetMs;
+        const showMs   = stopMs + BREATH_MS;
+        const hideMs   = resumeMs - FADE_LEAD_MS;
+
+        // 停車アニメーション切り替え
+        if (stopMs <= 0 && resumeMs > 0) {
+          carImg.style.animation = 'moving-car-stopped 0.4s ease-in-out infinite alternate';
+        } else if (stopMs > 0) {
+          pendingTimers.push(setTimeout(() => {
+            carImg.style.animation = 'moving-car-stopped 0.4s ease-in-out infinite alternate';
+          }, stopMs));
+        }
+        if (resumeMs > 0) {
+          pendingTimers.push(setTimeout(() => { carImg.style.animation = ''; }, resumeMs));
+        }
+
+        // 吹き出し表示
+        if (hideMs <= 0) return;
+        if (showMs <= 0) {
+          bubble.style.opacity = '1';
+        } else {
+          pendingTimers.push(setTimeout(() => { bubble.style.opacity = '1'; }, showMs));
+        }
+        pendingTimers.push(setTimeout(() => { bubble.style.opacity = '0'; }, hideMs));
+      }
+
+      schedule(phaseOffsetMs);
+      // e.target が car 自身のときだけ処理（子要素のバブルアップを無視）
+      car.addEventListener('animationiteration', (e) => {
+        if (e.target === car) schedule(0);
+      });
+    });
+  </script>
+)}

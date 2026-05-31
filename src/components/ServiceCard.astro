@@ -12,6 +12,7 @@ const {
   id={section.id}
 >
   <p class="panel__title">{section.label}</p>
+  {section.subtitle && <p class="panel__subtitle">{section.subtitle}</p>}
 
   {
     section.type === 'list' && (

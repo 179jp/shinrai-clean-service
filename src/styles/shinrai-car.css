@@ -12,10 +12,13 @@
   width: 100%;
   height: 72px;
 }
+.shinrai-car-wrapper.with-comment {
+  height: calc(72px + 120px);
+}
 
 .shinrai-car {
   position: absolute;
-  bottom: 0;
+  bottom: 2px;
   left: -200px;
   width: 114px;
   height: 64px;
@@ -47,7 +50,7 @@
 
 .shinrai-car .tier {
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   width: 20px;
   height: auto;
   animation: rolling 2s linear infinite;
@@ -106,5 +109,97 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* ===== コメントモード ===== */
+
+.shinrai-car-wrapper.with-comment .shinrai-car {
+  animation: left-to-right-with-comment 14s linear infinite;
+  @media (max-width: 768px) {
+    animation: left-to-right-with-comment 8s linear infinite;
+  }
+}
+.shinrai-car-wrapper.with-comment .shinrai-car.right-left {
+  animation: right-to-left-with-comment 14s linear infinite;
+  @media (max-width: 768px) {
+    animation: right-to-left-with-comment 8s linear infinite;
+  }
+}
+
+.shinrai-car-wrapper.with-comment .shinrai-car .tier {
+  animation: rolling-with-comment 14s linear infinite;
+  @media (max-width: 768px) {
+    animation: rolling-with-comment 8s linear infinite;
+  }
+}
+
+.comment-bubble {
+  position: absolute;
+  top: 10px;
+  left: calc(50% - 2.75em);
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.comment-bubble img {
+  width: auto;
+  height: 100px;
+  display: block;
+}
+
+/* デスクトップ: 全14s、33%で停車・71%で再発進 */
+@keyframes left-to-right-with-comment {
+  0%   { transform: translateX(0); }
+  33%  { transform: translateX(calc(50vw + 143px)); }
+  71%  { transform: translateX(calc(50vw + 143px)); }
+  100% { transform: translateX(calc(150vw + 114px)); }
+}
+
+@keyframes right-to-left-with-comment {
+  0%   { transform: translateX(0); }
+  33%  { transform: translateX(calc(-50vw - 143px)); }
+  71%  { transform: translateX(calc(-50vw - 143px)); }
+  100% { transform: translateX(calc(-150vw - 114px)); }
+}
+
+/* タイヤ停車: 180deg/s × 4.62s = 832deg、再開後 +731deg = 1563deg */
+@keyframes rolling-with-comment {
+  0%   { transform: rotate(0deg); }
+  33%  { transform: rotate(832deg); }
+  71%  { transform: rotate(832deg); }
+  100% { transform: rotate(1563deg); }
+}
+
+/* 停車中のアイドリングボブ */
+@keyframes moving-car-stopped {
+  0%   { transform: translateY(1px); }
+  100% { transform: translateY(-1px); }
+}
+
+/* モバイル: 全8s、32%で停車・76%で再発進 */
+@media (max-width: 768px) {
+  @keyframes left-to-right-with-comment {
+    0%   { transform: translateX(0); }
+    32%  { transform: translateX(calc(50vw + 143px)); }
+    76%  { transform: translateX(calc(50vw + 143px)); }
+    100% { transform: translateX(calc(150vw + 114px)); }
+  }
+
+  @keyframes right-to-left-with-comment {
+    0%   { transform: translateX(0); }
+    32%  { transform: translateX(calc(-50vw - 143px)); }
+    76%  { transform: translateX(calc(-50vw - 143px)); }
+    100% { transform: translateX(calc(-150vw - 114px)); }
+  }
+
+  /* タイヤ停車: 240deg/s × 2.56s = 614deg、再開後 +461deg = 1075deg */
+  @keyframes rolling-with-comment {
+    0%   { transform: rotate(0deg); }
+    32%  { transform: rotate(614deg); }
+    76%  { transform: rotate(614deg); }
+    100% { transform: rotate(1075deg); }
   }
 }
