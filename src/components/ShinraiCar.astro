@@ -107,12 +107,17 @@ const imgFolder = direction === 'left-right' ? 'shinrai-car' : 'shinrai-car-2';
           pendingTimers.push(setTimeout(() => { carImg.style.animation = ''; }, resumeMs));
         }
 
-        // 吹き出し表示
+        // 吹き出し表示（フォントロード待ちでがたつきを防ぐ）
         if (hideMs <= 0) return;
+        const showBubble = () => {
+          document.fonts.load('1em "DotGothic16"')
+            .then(() => { bubble.style.opacity = '1'; })
+            .catch(() => { bubble.style.opacity = '1'; });
+        };
         if (showMs <= 0) {
-          bubble.style.opacity = '1';
+          showBubble();
         } else {
-          pendingTimers.push(setTimeout(() => { bubble.style.opacity = '1'; }, showMs));
+          pendingTimers.push(setTimeout(showBubble, showMs));
         }
         pendingTimers.push(setTimeout(() => { bubble.style.opacity = '0'; }, hideMs));
       }
