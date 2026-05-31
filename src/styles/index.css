@@ -285,6 +285,7 @@ h2 {
 /* Services Section */
 #services {
   background: var(--bkg-white2);
+  padding-bottom: 1em;
 }
 
 .service-tabs {
@@ -336,7 +337,14 @@ h2 {
 }
 
 .service-card .panel__title {
-  margin-bottom: 2em;
+  margin-bottom: 0.4em;
+}
+
+.panel__subtitle {
+  font-size: 11px;
+  color: var(--color-primary);
+  margin: 0 0 1.6em;
+  letter-spacing: 0.04em;
 }
 
 .service-timestamp {

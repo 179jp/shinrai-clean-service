@@ -14,6 +14,7 @@ export type ServiceSection =
   | {
       id: string;
       label: string;
+      subtitle?: string;
       type: 'list';
       notes?: string[];
       items: ServiceListItem[];
@@ -23,6 +24,7 @@ export type ServiceSection =
   | {
       id: string;
       label: string;
+      subtitle?: string;
       type: 'list';
       notes?: string[];
       items: ServiceListItem[];

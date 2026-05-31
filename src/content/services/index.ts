@@ -1,7 +1,7 @@
 import type { RegularPlan, ServiceListItem } from '../../helper/serviceTypes';
 
 // 料金表の更新日
-export const priceDate = '2025年3月1日';
+export const priceDate = '2026年5月31日';
 
 // 水回りのサービス＆料金
 export const waterItems: ServiceListItem[] = [
@@ -20,8 +20,8 @@ export const bathOpsItems: ServiceListItem[] = [
 
 // エアコンクリーニングの料金
 export const airconItems: ServiceListItem[] = [
-  { name: 'ノーマル', price: '¥11,000/台' },
-  { name: '　2台目以降', price: '¥9,000/台' },
+  { name: 'ノーマル', price: '¥12,000/台' },
+  { name: '　2台目以降', price: '¥10,000/台' },
   { name: 'お掃除機能付き', price: '¥22,000/台' },
   { name: '　2台目以降', price: '¥20,000/台' },
 ];

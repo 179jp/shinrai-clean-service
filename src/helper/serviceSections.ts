@@ -29,6 +29,7 @@ export const serviceSections: ServiceSection[] = [
   {
     id: 'aircon',
     label: 'エアコン',
+    subtitle: '家庭用壁掛けエアコン 120cm未満',
     type: 'list',
     notes: airconNotes,
     items: airconItems,
