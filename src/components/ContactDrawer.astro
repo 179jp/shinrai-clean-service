@@ -227,6 +227,7 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     contactOverlay?.classList.remove('is-open');
     contactOverlay?.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('no-scroll');
+    document.body.classList.remove('drawer-open');
     if (lastActiveElement instanceof HTMLElement) {
       lastActiveElement.focus();
     }
@@ -292,6 +293,7 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     contactOverlay?.classList.add('is-open');
     contactOverlay?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
+    document.body.classList.add('drawer-open');
     contactDrawer?.focus();
   };
 
