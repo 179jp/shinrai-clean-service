@@ -1,5 +1,6 @@
 .service-shinrai-car {
-  width: 100%;
+  width: calc(100% + 8em);
+  margin-inline: -4em;
   overflow-x: hidden;
   @media (max-width: 768px) {
     width: calc(100% + 2em);
