@@ -280,7 +280,7 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
 
       const dd = document.createElement('dd');
       dd.className = 'contact-confirm__value';
-      dd.textContent = values.join('、');
+      dd.textContent = key === 'お名前' ? values.join('、') + ' 様' : values.join('、');
 
       contactConfirmSummary.appendChild(dt);
       contactConfirmSummary.appendChild(dd);
