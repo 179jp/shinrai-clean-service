@@ -1,7 +1,7 @@
 import type { Handler } from '@netlify/functions';
 import { Resend } from 'resend';
 
-const TO = 'y+sc@179.jp';
+const TO = 'shinrai.clean@gmail.com';
 const FROM = 'SHINRAI CLEAN SERVICE <contact@bot-shinrai-clean-service.179.jp>';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
