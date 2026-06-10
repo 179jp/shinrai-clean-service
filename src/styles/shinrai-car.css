@@ -1,5 +1,6 @@
 .service-shinrai-car {
-  width: 100%;
+  width: calc(100% + 8em);
+  margin-inline: -4em;
   overflow-x: hidden;
   @media (max-width: 768px) {
     width: calc(100% + 2em);
@@ -251,4 +252,11 @@
     76%  { transform: rotate(614deg); }
     100% { transform: rotate(1075deg); }
   }
+}
+
+/* ドロワーオープン中はアニメーション停止 */
+body.drawer-open .shinrai-car,
+body.drawer-open .shinrai-car *,
+body.drawer-open .comment-bubble {
+  animation-play-state: paused !important;
 }

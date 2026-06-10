@@ -16,19 +16,6 @@ const requestOptions = Array.from(new Set(rawOptions.filter(Boolean)));
 requestOptions.push('定期で依頼したい', 'その他');
 
 const intentOptions = ['依頼したい', '見積りしたい', '相談したい'];
-
-const timeSlots = [
-  '09:00',
-  '10:00',
-  '11:00',
-  '12:00',
-  '13:00',
-  '14:00',
-  '15:00',
-  '16:00',
-  '17:00',
-  '18:00',
-];
 ---
 
 <div class="contact-overlay" id="contactOverlay" aria-hidden="true">
@@ -44,7 +31,7 @@ const timeSlots = [
       <div>
         <p class="eyebrow">Contact</p>
         <h3 class="contact-drawer__title" id="contactDrawerTitle">
-          お見積り・ご依頼フォーム
+          お問い合わせ
         </h3>
       </div>
       <button
@@ -65,34 +52,23 @@ const timeSlots = [
         id="contactDrawerCall"
         href={`tel:${company.phone}`}
       >
-        汚れの天敵に電話する
+        電話で問い合わせる
       </a>
     </p>
 
-    <form
-      class="contact-form"
-      name="contact"
-      method="POST"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-    >
-      <input type="hidden" name="form-name" value="contact" />
-      <input
-        type="hidden"
-        name="お問い合わせ先"
-        id="contactLabelField"
-        value=""
-      />
-      <p class="visually-hidden">
-        <label>
-          送信しないでください
-          <input name="bot-field" />
-        </label>
-      </p>
+    <!-- Step 1: 入力フォーム -->
+    <form class="contact-form" id="contactForm">
+      <label class="form-field">
+        <span class="form-label">ご依頼</span>
+        <select name="ご依頼" required>
+          <option value="新規">新規</option>
+          <option value="リピート">リピート</option>
+        </select>
+      </label>
 
       <label class="form-field">
-        <span class="form-label">内容</span>
-        <select name="内容" id="contactIntent" required>
+        <span class="form-label">お問い合わせ内容</span>
+        <select name="お問い合わせ内容" id="contactIntent" required>
           {
             intentOptions.map((option) => (
               <option value={option}>{option}</option>
@@ -102,8 +78,8 @@ const timeSlots = [
       </label>
 
       <fieldset class="form-field">
-        <legend class="form-label">ご依頼（複数選択可）</legend>
-        <div class="request-options" role="group" aria-label="ご依頼">
+        <legend class="form-label">ご依頼内容（複数選択可）</legend>
+        <div class="request-options" role="group" aria-label="ご依頼内容">
           {
             requestOptions.map((option, index) => {
               const optionId = `request-${index}`;
@@ -112,7 +88,7 @@ const timeSlots = [
                   <input
                     type="checkbox"
                     id={optionId}
-                    name="ご依頼"
+                    name="ご依頼内容"
                     value={option}
                     data-require-group={index === 0}
                   />
@@ -124,57 +100,19 @@ const timeSlots = [
         </div>
       </fieldset>
 
-      <fieldset class="form-field datetime-wrapper" data-intent-section>
-        <legend class="form-label">ご希望の日時</legend>
-        <div class="datetime-preferences">
-          {
-            [1, 2, 3].map((index) => (
-              <div class="datetime-preference">
-                <div class="datetime-preference__title">
-                  <span>第{index}希望</span>
-                  {index === 1 ? (
-                    <span class="required-badge">必須</span>
-                  ) : (
-                    <span class="optional">任意</span>
-                  )}
-                </div>
-                <div class="datetime-preference__fields">
-                  <label class="form-subfield">
-                    <span>日付</span>
-                    <input
-                      type="date"
-                      name={`希望日_${index}`}
-                      data-intent-required={index === 1}
-                    />
-                  </label>
-                  <label class="form-subfield">
-                    <span>時間</span>
-                    <div class="time-range">
-                      <select
-                        name={`開始時間_${index}`}
-                        data-intent-required={index === 1}
-                      >
-                        {timeSlots.map((slot) => (
-                          <option value={slot}>{slot}</option>
-                        ))}
-                      </select>
-                      <span class="time-separator">〜</span>
-                      <select
-                        name={`終了時間_${index}`}
-                        data-intent-required={index === 1}
-                      >
-                        {timeSlots.map((slot) => (
-                          <option value={slot}>{slot}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      </fieldset>
+      <div class="aircon-fields" id="airconFields" hidden>
+        <label class="form-field">
+          <span class="form-label">エアコン 台数</span>
+          <select name="エアコン台数" id="airconCount">
+            <option value="1">1台</option>
+            <option value="2">2台</option>
+            <option value="3">3台</option>
+            <option value="4">4台</option>
+            <option value="5">5台</option>
+          </select>
+        </label>
+        <div id="airconUnits"></div>
+      </div>
 
       <label class="form-field">
         <span class="form-label">お名前</span>
@@ -208,103 +146,323 @@ const timeSlots = [
           placeholder="ご要望やご相談内容をご記入ください"></textarea>
       </label>
 
-      <button type="submit" class="contact-submit">送信する</button>
+      <button type="submit" class="contact-submit">確認する</button>
     </form>
+
+    <!-- Step 2: 確認画面 -->
+    <div class="contact-confirm" id="contactConfirm" hidden>
+      <p class="contact-confirm__lead">以下の内容で送信します。</p>
+      <dl class="contact-confirm__summary" id="contactConfirmSummary"></dl>
+      <div class="contact-confirm__actions">
+        <button
+          type="button"
+          class="contact-confirm__back"
+          id="contactConfirmBack"
+        >
+          修正する
+        </button>
+        <button
+          type="button"
+          class="contact-confirm__submit"
+          id="contactConfirmSubmit"
+        >
+          送信する
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: 送信完了 -->
+    <div class="contact-result" id="contactSuccess" hidden>
+      <p class="contact-result__icon">✓</p>
+      <p class="contact-result__title">送信しました</p>
+      <p class="contact-result__body">
+        お問い合わせありがとうございます。<br
+        />内容を確認させていただき、お電話にてご連絡いたします。
+      </p>
+    </div>
+
+    <!-- Step 3: エラー -->
+    <div class="contact-result" id="contactError" hidden>
+      <p class="contact-result__icon">!</p>
+      <p class="contact-result__title">送信に失敗しました</p>
+      <p class="contact-result__body">
+        しばらく時間をおいて再度お試しください。<br
+        />お急ぎの場合はお電話でご連絡ください。
+      </p>
+      <button type="button" class="contact-confirm__back" id="contactErrorBack">
+        戻る
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
-  const contactLabelMap = {
-    汚れの天敵: '天敵',
-    カビの刺客: '刺客',
-  };
-  const defaultContactLabel = contactLabelMap['汚れの天敵'];
   const contactOverlay = document.getElementById('contactOverlay');
   const contactDrawer = document.getElementById('contactDrawerPanel');
   const contactCloseButton = document.getElementById('contactDrawerClose');
   const contactTriggers = Array.from(
     document.querySelectorAll('[data-contact-trigger]')
   );
-  const contactTitle = document.getElementById('contactDrawerTitle');
-  const contactCallLink = document.getElementById('contactDrawerCall');
-  const contactSubmit = document.querySelector('.contact-submit');
-  const contactLabelField = document.getElementById('contactLabelField');
+  const contactForm = document.getElementById('contactForm');
+  const contactConfirm = document.getElementById('contactConfirm');
+  const contactConfirmSummary = document.getElementById(
+    'contactConfirmSummary'
+  );
+  const contactConfirmBack = document.getElementById('contactConfirmBack');
+  const contactConfirmSubmit = document.getElementById('contactConfirmSubmit');
+  const contactSuccess = document.getElementById('contactSuccess');
+  const contactError = document.getElementById('contactError');
+  const contactErrorBack = document.getElementById('contactErrorBack');
   const requestInputs = Array.from(
-    document.querySelectorAll('input[name="ご依頼"]')
+    document.querySelectorAll('input[name="ご依頼内容"]')
   );
-  const intentSelect = document.getElementById('contactIntent');
-  const scheduleSection = document.querySelector('[data-intent-section]');
-  const intentRequiredFields = Array.from(
-    document.querySelectorAll('[data-intent-required="true"]')
+  const airconCheckbox = requestInputs.find(
+    (input) => input instanceof HTMLInputElement && input.value === 'エアコン'
   );
-  let lastActiveElement;
-  let currentContactLabel = defaultContactLabel;
+  const airconFields = document.getElementById('airconFields');
+  const airconCount = document.getElementById('airconCount');
+  const airconUnits = document.getElementById('airconUnits');
+  let lastActiveElement = null;
+
+  const SKIP_FIELDS = new Set(['form-name', 'bot-field']);
+
+  const hideAll = () => {
+    if (contactForm) contactForm.hidden = true;
+    if (contactConfirm) contactConfirm.hidden = true;
+    if (contactSuccess) contactSuccess.hidden = true;
+    if (contactError) contactError.hidden = true;
+  };
 
   const closeContactDrawer = () => {
     contactOverlay?.classList.remove('is-open');
     contactOverlay?.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('no-scroll');
+    document.body.classList.remove('drawer-open');
     if (lastActiveElement instanceof HTMLElement) {
       lastActiveElement.focus();
     }
   };
 
-  const updateContactLabel = (label) => {
-    const resolvedLabel = contactLabelMap[label ?? ''] ?? label?.trim();
-    currentContactLabel = resolvedLabel || defaultContactLabel;
-    if (contactTitle) {
-      contactTitle.textContent = `${currentContactLabel} 依頼フォーム`;
+  const showForm = () => {
+    hideAll();
+    if (contactForm) contactForm.hidden = false;
+    if (contactDrawer) contactDrawer.scrollTop = 0;
+  };
+
+  const showConfirm = () => {
+    hideAll();
+    if (contactConfirm) contactConfirm.hidden = false;
+    if (contactDrawer) contactDrawer.scrollTop = 0;
+  };
+
+  const showSuccess = () => {
+    hideAll();
+    if (contactSuccess) contactSuccess.hidden = false;
+    if (contactDrawer) contactDrawer.scrollTop = 0;
+  };
+
+  const showError = () => {
+    hideAll();
+    if (contactError) contactError.hidden = false;
+    if (contactDrawer) contactDrawer.scrollTop = 0;
+  };
+
+  const mergeAirconFields = (grouped) => {
+    // 1パス目: エアコンメーカー/型番を収集、他はキー順を保持
+    const airconData = {};
+    const ordered = []; // [key, values] の順序付き配列
+
+    for (const [key, values] of grouped) {
+      const makerMatch = key.match(/^エアコンメーカー_(\d+)$/);
+      const modelMatch = key.match(/^エアコン型番_(\d+)$/);
+      if (makerMatch) {
+        const i = makerMatch[1];
+        airconData[i] = airconData[i] || {};
+        airconData[i].maker = values[0];
+      } else if (modelMatch) {
+        const i = modelMatch[1];
+        airconData[i] = airconData[i] || {};
+        airconData[i].model = values[0];
+      } else {
+        ordered.push([key, values]);
+      }
     }
-    if (contactCallLink) {
-      contactCallLink.textContent = `${currentContactLabel}に電話する`;
+
+    // 2パス目: エアコン台数の直後に エアコンN を挿入
+    const result = new Map();
+    for (const [key, values] of ordered) {
+      result.set(key, values);
+      if (key === 'エアコン台数') {
+        for (const i of Object.keys(airconData).sort()) {
+          const { maker = '', model = '' } = airconData[i];
+          const combined = maker + (model ? `（${model}）` : '');
+          if (combined) result.set(`エアコン${i}`, [combined]);
+        }
+      }
     }
-    if (contactSubmit) {
-      contactSubmit.textContent = `${currentContactLabel}へ送る`;
+    return result;
+  };
+
+  const buildSummary = () => {
+    if (!contactForm || !contactConfirmSummary) return;
+
+    const data = new FormData(contactForm);
+    const raw = new Map();
+
+    for (const [key, value] of data.entries()) {
+      if (SKIP_FIELDS.has(key) || !String(value).trim()) continue;
+      if (raw.has(key)) {
+        raw.get(key).push(String(value));
+      } else {
+        raw.set(key, [String(value)]);
+      }
     }
-    if (contactLabelField) {
-      contactLabelField.value = currentContactLabel;
+
+    const grouped = mergeAirconFields(raw);
+
+    contactConfirmSummary.innerHTML = '';
+    for (const [key, values] of grouped) {
+      const dt = document.createElement('dt');
+      dt.className = 'contact-confirm__label';
+      dt.textContent = key;
+
+      const dd = document.createElement('dd');
+      dd.className = 'contact-confirm__value';
+      dd.textContent =
+        key === 'お名前' ? values.join('、') + ' 様' : values.join('、');
+
+      contactConfirmSummary.appendChild(dt);
+      contactConfirmSummary.appendChild(dd);
     }
   };
 
   const openContactDrawer = () => {
     lastActiveElement = document.activeElement;
+    showForm();
     contactOverlay?.classList.add('is-open');
     contactOverlay?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
+    document.body.classList.add('drawer-open');
     contactDrawer?.focus();
-    updateScheduleVisibility();
   };
 
-  const updateScheduleVisibility = () => {
-    const shouldShow = intentSelect?.value === '依頼したい';
-    scheduleSection?.classList.toggle('is-hidden', !shouldShow);
-    intentRequiredFields.forEach((field) => {
-      if (
-        field instanceof HTMLInputElement ||
-        field instanceof HTMLSelectElement
-      ) {
-        if (shouldShow && field.dataset.intentRequired === 'true') {
-          field.required = true;
-        } else {
-          field.required = false;
-        }
-      }
-    });
+  const renderAirconUnits = (count) => {
+    if (!airconUnits) return;
+    airconUnits.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'aircon-units-wrapper';
+    for (let i = 1; i <= count; i++) {
+      const row = document.createElement('div');
+      row.className = 'aircon-unit';
+      row.innerHTML = `
+        ${count > 1 ? `<p class="aircon-unit__title">${i}台目</p>` : ''}
+        <div class="aircon-unit__fields">
+          <label class="form-subfield">
+            <span>メーカー</span>
+            <input type="text" name="エアコンメーカー_${i}" placeholder="例：ダイキン" />
+          </label>
+          <label class="form-subfield">
+            <span>型番</span>
+            <input type="text" name="エアコン型番_${i}" placeholder="例：AN40YRS-W" />
+          </label>
+        </div>
+      `;
+      wrapper.appendChild(row);
+    }
+    airconUnits.appendChild(wrapper);
   };
+
+  const updateAirconFields = () => {
+    const isChecked =
+      airconCheckbox instanceof HTMLInputElement
+        ? airconCheckbox.checked
+        : false;
+    if (airconFields) airconFields.hidden = !isChecked;
+    if (isChecked) {
+      const count = airconCount instanceof HTMLSelectElement
+        ? parseInt(airconCount.value, 10)
+        : 1;
+      renderAirconUnits(count);
+    }
+  };
+
+  airconCount?.addEventListener('change', () => {
+    const count = airconCount instanceof HTMLSelectElement
+      ? parseInt(airconCount.value, 10)
+      : 1;
+    renderAirconUnits(count);
+  });
 
   const updateRequestRequirement = () => {
-    const anyChecked = requestInputs.some((input) => input.checked);
+    const anyChecked = requestInputs.some(
+      (input) => input instanceof HTMLInputElement && input.checked
+    );
     requestInputs.forEach((input) => {
-      if (input.dataset.requireGroup === 'true') {
+      if (
+        input instanceof HTMLInputElement &&
+        input.dataset.requireGroup === 'true'
+      ) {
         input.required = !anyChecked;
       }
     });
   };
 
+  contactForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    buildSummary();
+    showConfirm();
+  });
+
+  contactConfirmBack?.addEventListener('click', () => {
+    showForm();
+  });
+
+  contactErrorBack?.addEventListener('click', () => {
+    showConfirm();
+  });
+
+  contactConfirmSubmit?.addEventListener('click', async () => {
+    if (!(contactForm instanceof HTMLFormElement)) return;
+
+    contactConfirmSubmit.disabled = true;
+    contactConfirmSubmit.textContent = '送信中…';
+
+    const formData = new FormData(contactForm);
+    const body: Record<string, string | string[]> = {};
+    for (const [key, value] of formData.entries()) {
+      if (SKIP_FIELDS.has(key) || !String(value).trim()) continue;
+      const existing = body[key];
+      if (existing) {
+        body[key] = Array.isArray(existing)
+          ? [...existing, String(value)]
+          : [existing, String(value)];
+      } else {
+        body[key] = String(value);
+      }
+    }
+
+    try {
+      const res = await fetch('/.netlify/functions/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        showSuccess();
+      } else {
+        showError();
+      }
+    } catch {
+      showError();
+    } finally {
+      contactConfirmSubmit.disabled = false;
+      contactConfirmSubmit.textContent = '送信する';
+    }
+  });
+
   contactTriggers.forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
-      updateContactLabel(trigger.dataset.contactLabel);
       openContactDrawer();
     });
   });
@@ -325,12 +483,17 @@ const timeSlots = [
     }
   });
 
-  intentSelect?.addEventListener('change', updateScheduleVisibility);
-
-  requestInputs.forEach((input) => {
-    input.addEventListener('change', updateRequestRequirement);
+  airconCheckbox?.addEventListener('change', () => {
+    updateAirconFields();
+    updateRequestRequirement();
   });
 
-  updateContactLabel(defaultContactLabel);
+  requestInputs.forEach((input) => {
+    if (input !== airconCheckbox) {
+      input.addEventListener('change', updateRequestRequirement);
+    }
+  });
+
   updateRequestRequirement();
+  updateAirconFields();
 </script>
