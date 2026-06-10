@@ -397,6 +397,14 @@ h2 {
   gap: 12px;
 }
 
+.campaign-empty {
+  text-align: center;
+  color: var(--color-subtle);
+  opacity: 0.5;
+  font-size: 0.95rem;
+  padding: 1.5em 0;
+}
+
 .month-title {
   display: flex;
   flex-direction: column;
@@ -772,6 +780,26 @@ h2 {
   gap: 6px;
   font-size: 14px;
   color: var(--color-muted);
+}
+
+.aircon-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aircon-fields[hidden] {
+  display: none;
+}
+
+.aircon-unit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
 }
 
 .time-range {

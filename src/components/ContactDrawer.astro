@@ -102,23 +102,16 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
 
       <div class="aircon-fields" id="airconFields" hidden>
         <label class="form-field">
-          <span class="form-label">エアコン メーカー</span>
-          <input
-            type="text"
-            name="エアコンメーカー"
-            id="airconMaker"
-            placeholder="例：ダイキン、三菱、パナソニック"
-          />
+          <span class="form-label">エアコン 台数</span>
+          <select name="エアコン台数" id="airconCount">
+            <option value="1">1台</option>
+            <option value="2">2台</option>
+            <option value="3">3台</option>
+            <option value="4">4台</option>
+            <option value="5">5台</option>
+          </select>
         </label>
-        <label class="form-field">
-          <span class="form-label">エアコン 型番</span>
-          <input
-            type="text"
-            name="エアコン型番"
-            id="airconModel"
-            placeholder="例：AN40YRS-W"
-          />
-        </label>
+        <div id="airconUnits"></div>
       </div>
 
       <label class="form-field">
@@ -227,6 +220,8 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     (input) => input instanceof HTMLInputElement && input.value === 'エアコン'
   );
   const airconFields = document.getElementById('airconFields');
+  const airconCount = document.getElementById('airconCount');
+  const airconUnits = document.getElementById('airconUnits');
   let lastActiveElement = null;
 
   const SKIP_FIELDS = new Set(['form-name', 'bot-field']);
@@ -313,13 +308,48 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     contactDrawer?.focus();
   };
 
+  const renderAirconUnits = (count) => {
+    if (!airconUnits) return;
+    airconUnits.innerHTML = '';
+    for (let i = 1; i <= count; i++) {
+      const label = count === 1 ? '' : `${i}台目 `;
+      const row = document.createElement('div');
+      row.className = 'aircon-unit';
+
+      row.innerHTML = `
+        <label class="form-subfield">
+          <span>${label}メーカー</span>
+          <input type="text" name="エアコンメーカー_${i}" placeholder="例：ダイキン" />
+        </label>
+        <label class="form-subfield">
+          <span>${label}型番</span>
+          <input type="text" name="エアコン型番_${i}" placeholder="例：AN40YRS-W" />
+        </label>
+      `;
+      airconUnits.appendChild(row);
+    }
+  };
+
   const updateAirconFields = () => {
     const isChecked =
       airconCheckbox instanceof HTMLInputElement
         ? airconCheckbox.checked
         : false;
     if (airconFields) airconFields.hidden = !isChecked;
+    if (isChecked) {
+      const count = airconCount instanceof HTMLSelectElement
+        ? parseInt(airconCount.value, 10)
+        : 1;
+      renderAirconUnits(count);
+    }
   };
+
+  airconCount?.addEventListener('change', () => {
+    const count = airconCount instanceof HTMLSelectElement
+      ? parseInt(airconCount.value, 10)
+      : 1;
+    renderAirconUnits(count);
+  });
 
   const updateRequestRequirement = () => {
     const anyChecked = requestInputs.some(
