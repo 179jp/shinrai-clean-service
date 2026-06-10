@@ -58,7 +58,6 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
 
     <!-- Step 1: 入力フォーム -->
     <form class="contact-form" id="contactForm">
-
       <label class="form-field">
         <span class="form-label">ご依頼</span>
         <select name="ご依頼" required>
@@ -162,10 +161,18 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
       <p class="contact-confirm__lead">以下の内容で送信します。</p>
       <dl class="contact-confirm__summary" id="contactConfirmSummary"></dl>
       <div class="contact-confirm__actions">
-        <button type="button" class="contact-confirm__back" id="contactConfirmBack">
+        <button
+          type="button"
+          class="contact-confirm__back"
+          id="contactConfirmBack"
+        >
           修正する
         </button>
-        <button type="button" class="contact-confirm__submit" id="contactConfirmSubmit">
+        <button
+          type="button"
+          class="contact-confirm__submit"
+          id="contactConfirmSubmit"
+        >
           送信する
         </button>
       </div>
@@ -175,14 +182,20 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     <div class="contact-result" id="contactSuccess" hidden>
       <p class="contact-result__icon">✓</p>
       <p class="contact-result__title">送信しました</p>
-      <p class="contact-result__body">お問い合わせありがとうございます。<br />内容を確認の上、ご連絡いたします。</p>
+      <p class="contact-result__body">
+        お問い合わせありがとうございます。<br
+        />内容を確認させていただき、お電話にてご連絡いたします。
+      </p>
     </div>
 
     <!-- Step 3: エラー -->
     <div class="contact-result" id="contactError" hidden>
       <p class="contact-result__icon">!</p>
       <p class="contact-result__title">送信に失敗しました</p>
-      <p class="contact-result__body">しばらく時間をおいて再度お試しください。<br />お急ぎの場合はお電話でご連絡ください。</p>
+      <p class="contact-result__body">
+        しばらく時間をおいて再度お試しください。<br
+        />お急ぎの場合はお電話でご連絡ください。
+      </p>
       <button type="button" class="contact-confirm__back" id="contactErrorBack">
         戻る
       </button>
@@ -199,7 +212,9 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
   );
   const contactForm = document.getElementById('contactForm');
   const contactConfirm = document.getElementById('contactConfirm');
-  const contactConfirmSummary = document.getElementById('contactConfirmSummary');
+  const contactConfirmSummary = document.getElementById(
+    'contactConfirmSummary'
+  );
   const contactConfirmBack = document.getElementById('contactConfirmBack');
   const contactConfirmSubmit = document.getElementById('contactConfirmSubmit');
   const contactSuccess = document.getElementById('contactSuccess');
@@ -280,7 +295,8 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
 
       const dd = document.createElement('dd');
       dd.className = 'contact-confirm__value';
-      dd.textContent = key === 'お名前' ? values.join('、') + ' 様' : values.join('、');
+      dd.textContent =
+        key === 'お名前' ? values.join('、') + ' 様' : values.join('、');
 
       contactConfirmSummary.appendChild(dt);
       contactConfirmSummary.appendChild(dd);
