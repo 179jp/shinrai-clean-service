@@ -800,15 +800,50 @@ h2 {
 }
 
 .aircon-unit {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--border-soft);
 }
 
 .aircon-unit:last-child {
   border-bottom: none;
+}
+
+.aircon-unit__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-subtle);
+  margin: 0;
+}
+
+.aircon-unit__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .aircon-unit__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .aircon-unit .form-subfield {
+    display: grid;
+    grid-template-columns: 3em 1fr;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .aircon-unit .form-subfield span {
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .aircon-unit .form-subfield input {
+    min-width: 0;
+  }
 }
 
 .time-range {

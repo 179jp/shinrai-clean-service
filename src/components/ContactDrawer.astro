@@ -352,18 +352,20 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     const wrapper = document.createElement('div');
     wrapper.className = 'aircon-units-wrapper';
     for (let i = 1; i <= count; i++) {
-      const label = count === 1 ? '' : `${i}台目 `;
       const row = document.createElement('div');
       row.className = 'aircon-unit';
       row.innerHTML = `
-        <label class="form-subfield">
-          <span>${label}メーカー</span>
-          <input type="text" name="エアコンメーカー_${i}" placeholder="例：ダイキン" />
-        </label>
-        <label class="form-subfield">
-          <span>${label}型番</span>
-          <input type="text" name="エアコン型番_${i}" placeholder="例：AN40YRS-W" />
-        </label>
+        ${count > 1 ? `<p class="aircon-unit__title">${i}台目</p>` : ''}
+        <div class="aircon-unit__fields">
+          <label class="form-subfield">
+            <span>メーカー</span>
+            <input type="text" name="エアコンメーカー_${i}" placeholder="例：ダイキン" />
+          </label>
+          <label class="form-subfield">
+            <span>型番</span>
+            <input type="text" name="エアコン型番_${i}" placeholder="例：AN40YRS-W" />
+          </label>
+        </div>
       `;
       wrapper.appendChild(row);
     }
