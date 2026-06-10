@@ -19,8 +19,9 @@ export const handler: Handler = async (event) => {
   }
 
   // エアコンメーカー_N / エアコン型番_N を「エアコンN メーカー（型番）」にまとめる
-  const mergedData: Record<string, string | string[]> = {};
+  // 1パス目: エアコンメーカー/型番を収集、他はキー順を保持
   const airconData: Record<string, { maker?: string; model?: string }> = {};
+  const ordered: [string, string | string[]][] = [];
 
   for (const [key, value] of Object.entries(data)) {
     const makerMatch = key.match(/^エアコンメーカー_(\d+)$/);
@@ -34,22 +35,20 @@ export const handler: Handler = async (event) => {
       airconData[i] = airconData[i] ?? {};
       airconData[i].model = Array.isArray(value) ? value[0] : value;
     } else {
-      mergedData[key] = value;
-      if (key === 'エアコン台数') {
-        for (const i of Object.keys(airconData).sort()) {
-          const { maker = '', model = '' } = airconData[i];
-          const combined = maker + (model ? `（${model}）` : '');
-          if (combined) mergedData[`エアコン${i}`] = combined;
-        }
-      }
+      ordered.push([key, value]);
     }
   }
-  // エアコン台数より後に来たペアのフォールバック
-  for (const i of Object.keys(airconData).sort()) {
-    if (!(`エアコン${i}` in mergedData)) {
-      const { maker = '', model = '' } = airconData[i];
-      const combined = maker + (model ? `（${model}）` : '');
-      if (combined) mergedData[`エアコン${i}`] = combined;
+
+  // 2パス目: エアコン台数の直後に エアコンN を挿入
+  const mergedData: Record<string, string | string[]> = {};
+  for (const [key, value] of ordered) {
+    mergedData[key] = value;
+    if (key === 'エアコン台数') {
+      for (const i of Object.keys(airconData).sort()) {
+        const { maker = '', model = '' } = airconData[i];
+        const combined = maker + (model ? `（${model}）` : '');
+        if (combined) mergedData[`エアコン${i}`] = combined;
+      }
     }
   }
 

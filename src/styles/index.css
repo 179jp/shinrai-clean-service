@@ -792,14 +792,23 @@ h2 {
   display: none;
 }
 
+.aircon-units-wrapper {
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.02);
+}
+
 .aircon-unit {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.02);
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.aircon-unit:last-child {
+  border-bottom: none;
 }
 
 .time-range {

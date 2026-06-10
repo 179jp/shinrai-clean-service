@@ -268,8 +268,9 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
   };
 
   const mergeAirconFields = (grouped) => {
+    // 1パス目: エアコンメーカー/型番を収集、他はキー順を保持
     const airconData = {};
-    const result = new Map();
+    const ordered = []; // [key, values] の順序付き配列
 
     for (const [key, values] of grouped) {
       const makerMatch = key.match(/^エアコンメーカー_(\d+)$/);
@@ -283,22 +284,20 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
         airconData[i] = airconData[i] || {};
         airconData[i].model = values[0];
       } else {
-        result.set(key, values);
-        if (key === 'エアコン台数') {
-          for (const i of Object.keys(airconData).sort()) {
-            const { maker = '', model = '' } = airconData[i];
-            const combined = maker + (model ? `（${model}）` : '');
-            if (combined) result.set(`エアコン${i}`, [combined]);
-          }
-        }
+        ordered.push([key, values]);
       }
     }
-    // エアコン台数が先に来なかった場合のフォールバック
-    for (const i of Object.keys(airconData).sort()) {
-      if (!result.has(`エアコン${i}`)) {
-        const { maker = '', model = '' } = airconData[i];
-        const combined = maker + (model ? `（${model}）` : '');
-        if (combined) result.set(`エアコン${i}`, [combined]);
+
+    // 2パス目: エアコン台数の直後に エアコンN を挿入
+    const result = new Map();
+    for (const [key, values] of ordered) {
+      result.set(key, values);
+      if (key === 'エアコン台数') {
+        for (const i of Object.keys(airconData).sort()) {
+          const { maker = '', model = '' } = airconData[i];
+          const combined = maker + (model ? `（${model}）` : '');
+          if (combined) result.set(`エアコン${i}`, [combined]);
+        }
       }
     }
     return result;
@@ -350,11 +349,12 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
   const renderAirconUnits = (count) => {
     if (!airconUnits) return;
     airconUnits.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'aircon-units-wrapper';
     for (let i = 1; i <= count; i++) {
       const label = count === 1 ? '' : `${i}台目 `;
       const row = document.createElement('div');
       row.className = 'aircon-unit';
-
       row.innerHTML = `
         <label class="form-subfield">
           <span>${label}メーカー</span>
@@ -365,8 +365,9 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
           <input type="text" name="エアコン型番_${i}" placeholder="例：AN40YRS-W" />
         </label>
       `;
-      airconUnits.appendChild(row);
+      wrapper.appendChild(row);
     }
+    airconUnits.appendChild(wrapper);
   };
 
   const updateAirconFields = () => {
