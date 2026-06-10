@@ -18,7 +18,42 @@ export const handler: Handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const rows = Object.entries(data)
+  // エアコンメーカー_N / エアコン型番_N を「エアコンN メーカー（型番）」にまとめる
+  const mergedData: Record<string, string | string[]> = {};
+  const airconData: Record<string, { maker?: string; model?: string }> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    const makerMatch = key.match(/^エアコンメーカー_(\d+)$/);
+    const modelMatch = key.match(/^エアコン型番_(\d+)$/);
+    if (makerMatch) {
+      const i = makerMatch[1];
+      airconData[i] = airconData[i] ?? {};
+      airconData[i].maker = Array.isArray(value) ? value[0] : value;
+    } else if (modelMatch) {
+      const i = modelMatch[1];
+      airconData[i] = airconData[i] ?? {};
+      airconData[i].model = Array.isArray(value) ? value[0] : value;
+    } else {
+      mergedData[key] = value;
+      if (key === 'エアコン台数') {
+        for (const i of Object.keys(airconData).sort()) {
+          const { maker = '', model = '' } = airconData[i];
+          const combined = maker + (model ? `（${model}）` : '');
+          if (combined) mergedData[`エアコン${i}`] = combined;
+        }
+      }
+    }
+  }
+  // エアコン台数より後に来たペアのフォールバック
+  for (const i of Object.keys(airconData).sort()) {
+    if (!(`エアコン${i}` in mergedData)) {
+      const { maker = '', model = '' } = airconData[i];
+      const combined = maker + (model ? `（${model}）` : '');
+      if (combined) mergedData[`エアコン${i}`] = combined;
+    }
+  }
+
+  const rows = Object.entries(mergedData)
     .map(([key, value]) => {
       const val = Array.isArray(value) ? value.join('、') : value;
       return `<tr><th style="text-align:left;padding:8px 12px;background:#f5f5f5;white-space:nowrap;font-weight:600;border-bottom:1px solid #e5e5e5">${key}</th><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5">${val}</td></tr>`;

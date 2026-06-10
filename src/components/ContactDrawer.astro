@@ -267,20 +267,59 @@ const intentOptions = ['依頼したい', '見積りしたい', '相談したい
     if (contactDrawer) contactDrawer.scrollTop = 0;
   };
 
+  const mergeAirconFields = (grouped) => {
+    const airconData = {};
+    const result = new Map();
+
+    for (const [key, values] of grouped) {
+      const makerMatch = key.match(/^エアコンメーカー_(\d+)$/);
+      const modelMatch = key.match(/^エアコン型番_(\d+)$/);
+      if (makerMatch) {
+        const i = makerMatch[1];
+        airconData[i] = airconData[i] || {};
+        airconData[i].maker = values[0];
+      } else if (modelMatch) {
+        const i = modelMatch[1];
+        airconData[i] = airconData[i] || {};
+        airconData[i].model = values[0];
+      } else {
+        result.set(key, values);
+        if (key === 'エアコン台数') {
+          for (const i of Object.keys(airconData).sort()) {
+            const { maker = '', model = '' } = airconData[i];
+            const combined = maker + (model ? `（${model}）` : '');
+            if (combined) result.set(`エアコン${i}`, [combined]);
+          }
+        }
+      }
+    }
+    // エアコン台数が先に来なかった場合のフォールバック
+    for (const i of Object.keys(airconData).sort()) {
+      if (!result.has(`エアコン${i}`)) {
+        const { maker = '', model = '' } = airconData[i];
+        const combined = maker + (model ? `（${model}）` : '');
+        if (combined) result.set(`エアコン${i}`, [combined]);
+      }
+    }
+    return result;
+  };
+
   const buildSummary = () => {
     if (!contactForm || !contactConfirmSummary) return;
 
     const data = new FormData(contactForm);
-    const grouped = new Map();
+    const raw = new Map();
 
     for (const [key, value] of data.entries()) {
       if (SKIP_FIELDS.has(key) || !String(value).trim()) continue;
-      if (grouped.has(key)) {
-        grouped.get(key).push(String(value));
+      if (raw.has(key)) {
+        raw.get(key).push(String(value));
       } else {
-        grouped.set(key, [String(value)]);
+        raw.set(key, [String(value)]);
       }
     }
+
+    const grouped = mergeAirconFields(raw);
 
     contactConfirmSummary.innerHTML = '';
     for (const [key, values] of grouped) {
